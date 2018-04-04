@@ -1,0 +1,8 @@
+X:\Programming\C#\asd2-lab2\asd2-lab2\obj\Debug\asd2-lab2.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2-lab2\asd2-lab2\obj\Debug\asd2-lab2.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2-lab2\asd2-lab2\bin\Debug\asd2-lab2.exe.config
+X:\Programming\C#\asd2-lab2\asd2-lab2\bin\Debug\asd2-lab2.exe
+X:\Programming\C#\asd2-lab2\asd2-lab2\bin\Debug\asd2-lab2.pdb
+X:\Programming\C#\asd2-lab2\asd2-lab2\bin\Debug\TestSet.dll
+X:\Programming\C#\asd2-lab2\asd2-lab2\obj\Debug\asd2-lab2.exe
+X:\Programming\C#\asd2-lab2\asd2-lab2\obj\Debug\asd2-lab2.pdb

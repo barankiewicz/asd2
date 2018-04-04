@@ -1,0 +1,7 @@
+X:\Programming\C#\asd2-lab1\asd2-lab1\bin\Debug\asd2-lab1.exe.config
+X:\Programming\C#\asd2-lab1\asd2-lab1\bin\Debug\asd2-lab1.exe
+X:\Programming\C#\asd2-lab1\asd2-lab1\bin\Debug\asd2-lab1.pdb
+X:\Programming\C#\asd2-lab1\asd2-lab1\obj\Debug\asd2-lab1.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2-lab1\asd2-lab1\obj\Debug\asd2-lab1.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2-lab1\asd2-lab1\obj\Debug\asd2-lab1.exe
+X:\Programming\C#\asd2-lab1\asd2-lab1\obj\Debug\asd2-lab1.pdb

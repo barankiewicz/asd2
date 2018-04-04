@@ -1,0 +1,9 @@
+X:\Programming\C#\asd2-lab5\asd2-lab5\bin\Debug\asd2-lab5.exe.config
+X:\Programming\C#\asd2-lab5\asd2-lab5\bin\Debug\asd2-lab5.exe
+X:\Programming\C#\asd2-lab5\asd2-lab5\bin\Debug\asd2-lab5.pdb
+X:\Programming\C#\asd2-lab5\asd2-lab5\bin\Debug\Graph.dll
+X:\Programming\C#\asd2-lab5\asd2-lab5\bin\Debug\TestSet.dll
+X:\Programming\C#\asd2-lab5\asd2-lab5\obj\Debug\asd2-lab5.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2-lab5\asd2-lab5\obj\Debug\asd2-lab5.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2-lab5\asd2-lab5\obj\Debug\asd2-lab5.exe
+X:\Programming\C#\asd2-lab5\asd2-lab5\obj\Debug\asd2-lab5.pdb
