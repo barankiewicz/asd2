@@ -238,74 +238,73 @@ namespace ASD
             int startFirst = 0;
             int endLast = 0;
 
-            Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, k * x * y);
-            for(int p = 1; p <= k; p++)
+            Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, (k+1) * x * y);
+            for(int p = 0; p < k; p++)
             {
                 for (int i = 0; i < y; i++)
                 {
                     for (int j = 0; j < x; j++)
                     {
-                        if(maze[i,j] == 'S' && p == 1)
+                        if(maze[i,j] == 'S' && p == 0)
                         {
                             startFirst = vNo;
                         }
-                        if (maze[i, j] == 'E' && p == k)
+                        if (maze[i, j] == 'E' && p == k - 1)
                         {
                             endLast = vNo;
                         }
 
-                        if(maze[i,j] != 'X')
-                        {
-                            char up = i >= 1 ? maze[i - 1, j] : 'N';
-                            char down = i < y - 1 ? maze[i + 1, j] : 'N';
-                            char left = j >= 1 ? maze[i, j - 1] : 'N';
-                            char right = j < x - 1 ? maze[i, j + 1] : 'N';
+                        char up = i >= 1 ? maze[i - 1, j] : 'N';
+                        char down = i < y - 1 ? maze[i + 1, j] : 'N';
+                        char left = j >= 1 ? maze[i, j - 1] : 'N';
+                        char right = j < x - 1 ? maze[i, j + 1] : 'N';
 
-                            switch(up)
-                            {
-                                case 'X':
-                                    g.AddEdge(vNo, (vNo + p * layerOffset) - x, t);
-                                    break;
-                                case 'N':
-                                    break;
-                                default:
-                                    g.AddEdge(vNo, vNo - x);
-                                    break;
-                            }
-                            switch (down)
-                            {
-                                case 'X':
-                                    g.AddEdge(vNo, (vNo + p * layerOffset) + x, t);
-                                    break;
-                                case 'N':
-                                    break;
-                                default:
-                                    g.AddEdge(vNo, vNo + x);
-                                    break;
-                            }
-                            switch (left)
-                            {
-                                case 'X':
-                                    g.AddEdge(vNo, (vNo + p * layerOffset) - 1, t);
-                                    break;
-                                case 'N':
-                                    break;
-                                default:
-                                    g.AddEdge(vNo, vNo - 1);
-                                    break;
-                            }
-                            switch (right)
-                            {
-                                case 'X':
-                                    g.AddEdge(vNo, (vNo + p * layerOffset) + 1, t);
-                                    break;
-                                case 'N':
-                                    break;
-                                default:
-                                    g.AddEdge(vNo, vNo + 1);
-                                    break;
-                            }
+                        int nextLayerVert = vNo + layerOffset;
+                        switch(up)
+                        {
+                            case 'X':
+                                g.AddEdge(vNo, nextLayerVert - x, t);
+                                break;
+                            case 'N':
+                                break;
+                            default:
+                                g.AddEdge(vNo, vNo - x);
+                                break;
                         }
+                        switch (down)
+                        {
+                            case 'X':
+                                g.AddEdge(vNo, nextLayerVert + x, t);
+                                break;
+                            case 'N':
+                                break;
+                            default:
+                                g.AddEdge(vNo, vNo + x);
+                                break;
+                        }
+                        switch (left)
+                        {
+                            case 'X':
+                                g.AddEdge(vNo, nextLayerVert - 1, t);
+                                break;
+                            case 'N':
+                                break;
+                            default:
+                                g.AddEdge(vNo, vNo - 1);
+                                break;
+                        }
+                        switch (right)
+                        {
+                            case 'X':
+                                g.AddEdge(vNo, nextLayerVert + 1, t);
+                                break;
+                            case 'N':
+                                break;
+                            default:
+                                g.AddEdge(vNo, vNo + 1);
+                                break;
+                        }
+                        vNo++;
                     }
                 }
             }
