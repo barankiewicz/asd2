@@ -1,0 +1,9 @@
+h:\Windows7\Desktop\ASD2\lab6\lab6\bin\Debug\lab6.exe.config
+h:\Windows7\Desktop\ASD2\lab6\lab6\bin\Debug\lab6.exe
+h:\Windows7\Desktop\ASD2\lab6\lab6\bin\Debug\lab6.pdb
+h:\Windows7\Desktop\ASD2\lab6\lab6\bin\Debug\Graph.dll
+h:\Windows7\Desktop\ASD2\lab6\lab6\bin\Debug\TestSet.dll
+h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.csprojResolveAssemblyReference.cache
+h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.csproj.CoreCompileInputs.cache
+h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.exe
+h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.pdb
