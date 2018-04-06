@@ -7,3 +7,10 @@ h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.csprojResolveAssemblyReference
 h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.csproj.CoreCompileInputs.cache
 h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.exe
 h:\Windows7\Desktop\ASD2\lab6\lab6\obj\Debug\lab6.pdb
+H:\Documents\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.csprojResolveAssemblyReference.cache
+H:\Documents\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.csproj.CoreCompileInputs.cache
+H:\Documents\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.exe
+H:\Documents\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.pdb
+H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe.config
+H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe
+H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.pdb

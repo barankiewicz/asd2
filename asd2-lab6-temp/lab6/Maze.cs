@@ -231,9 +231,94 @@ namespace ASD
         /// <param name="t">czas zburzenia ściany</param>
         public int FindShortestPathWithKDynamites(char[,] maze, int k, out string path, int t)
         {
+            int x = maze.GetLength(1);
+            int y = maze.GetLength(0);
+            int layerOffset = x * y;
+            int vNo = 0;
+            int startFirst = 0;
+            int endLast = 0;
+
+            Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, k * x * y);
+            for(int p = 1; p <= k; p++)
+            {
+                for (int i = 0; i < y; i++)
+                {
+                    for (int j = 0; j < x; j++)
+                    {
+                        if(maze[i,j] == 'S' && p == 1)
+                        {
+                            startFirst = vNo;
+                        }
+                        if (maze[i, j] == 'E' && p == k)
+                        {
+                            endLast = vNo;
+                        }
+
+                        if(maze[i,j] != 'X')
+                        {
+                            char up = i >= 1 ? maze[i - 1, j] : 'N';
+                            char down = i < y - 1 ? maze[i + 1, j] : 'N';
+                            char left = j >= 1 ? maze[i, j - 1] : 'N';
+                            char right = j < x - 1 ? maze[i, j + 1] : 'N';
+
+                            switch(up)
+                            {
+                                case 'X':
+                                    g.AddEdge(vNo, (vNo + p * layerOffset) - x, t);
+                                    break;
+                                case 'N':
+                                    break;
+                                default:
+                                    g.AddEdge(vNo, vNo - x);
+                                    break;
+                            }
+                            switch (down)
+                            {
+                                case 'X':
+                                    g.AddEdge(vNo, (vNo + p * layerOffset) + x, t);
+                                    break;
+                                case 'N':
+                                    break;
+                                default:
+                                    g.AddEdge(vNo, vNo + x);
+                                    break;
+                            }
+                            switch (left)
+                            {
+                                case 'X':
+                                    g.AddEdge(vNo, (vNo + p * layerOffset) - 1, t);
+                                    break;
+                                case 'N':
+                                    break;
+                                default:
+                                    g.AddEdge(vNo, vNo - 1);
+                                    break;
+                            }
+                            switch (right)
+                            {
+                                case 'X':
+                                    g.AddEdge(vNo, (vNo + p * layerOffset) + 1, t);
+                                    break;
+                                case 'N':
+                                    break;
+                                default:
+                                    g.AddEdge(vNo, vNo + 1);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
             path = null; // tej linii na laboratorium nie zmieniamy!
-            return 0;
+            PathsInfo[] paths;
+            if (!g.DijkstraShortestPaths(startFirst, out paths))
+                return -1;
+
+            if (paths[endLast].Last == null)
+                return -1;
+
+            return (int)paths[endLast].Dist;
         }
-        
     }
 }
