@@ -14,3 +14,10 @@ H:\Documents\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.pdb
 H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe.config
 H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe
 H:\Documents\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.pdb
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe.config
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.exe
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\bin\Debug\lab6.pdb
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.exe
+X:\Programming\C#\asd2\asd2-lab6-temp\lab6\obj\Debug\lab6.pdb

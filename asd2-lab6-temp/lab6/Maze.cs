@@ -27,182 +27,91 @@ namespace ASD
             int end = 0;
 
             Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, x * y);
-            for(int i = 0; i < y; i++)
+            for (int i = 0; i < y; i++)
             {
-                for (int j = 0; j<x; j++)
+                for (int j = 0; j < x; j++)
                 {
-                    if (maze[i, j] == 'S')
-                    {
+                    char curChar = maze[i, j];
+                    char leftChar = j >= 1 ? maze[i, j - 1] : 'N';
+                    char rightChar = j < x - 1 ? maze[i, j + 1] : 'N';
+                    char upChar = i >= 1 ? maze[i - 1, j] : 'N';
+                    char downChar = i < y - 1 ? maze[i + 1, j] : 'N';
+
+                    if (curChar == 'S')
                         start = vNo;
-                        if (withDynamite) //Work on it if you have dynamite
-                        {
-                            bool leftStone = j >= 1 ? maze[i, j - 1] == 'X' : false;
-                            bool rightStone = j < x - 1 ? maze[i, j + 1] == 'X' : false;
-                            bool upStone = i >= 1 ? maze[i - 1, j] == 'X' : false;
-                            bool downStone = i < y - 1 ? maze[i + 1, j] == 'X' : false;
 
-                            if (leftStone)
-                            {
-                                maze[i, j - 1] = 'O';
-                                g.AddEdge(vNo, vNo - 1, t);
-                            }
-
-                            if (rightStone)
-                            {
-                                maze[i, j + 1] = 'O';
-                                g.AddEdge(vNo, vNo + 1, t);
-                            }
-
-                            if (upStone)
-                            {
-                                maze[i - 1, j] = 'O';
-                                g.AddEdge(vNo, vNo - x, t);
-                            }
-
-                            if (downStone)
-                            {
-                                maze[i + 1, j] = 'O';
-                                g.AddEdge(vNo, vNo + x, t);
-                            }
-                        }
-                    }
-                        
-
-                    if (maze[i, j] == 'E')
-                    {
+                    if (curChar == 'E')
                         end = vNo;
-                        if (withDynamite) //Work on it if you have dynamite
-                        {
-                            bool leftStone = j >= 1 ? maze[i, j - 1] == 'X' : false;
-                            bool rightStone = j < x - 1 ? maze[i, j + 1] == 'X' : false;
-                            bool upStone = i >= 1 ? maze[i - 1, j] == 'X' : false;
-                            bool downStone = i < y - 1 ? maze[i + 1, j] == 'X' : false;
-
-                            if (leftStone)
-                            {
-                                maze[i, j - 1] = 'O';
-                                g.AddEdge(vNo, vNo - 1, t);
-                            }
-
-                            if (rightStone)
-                            {
-                                maze[i, j + 1] = 'O';
-                                g.AddEdge(vNo, vNo + 1, t);
-                            }
-
-                            if (upStone)
-                            {
-                                maze[i - 1, j] = 'O';
-                                g.AddEdge(vNo, vNo - x, t);
-                            }
-
-                            if (downStone)
-                            {
-                                maze[i + 1, j] = 'O';
-                                g.AddEdge(vNo, vNo + x, t);
-                            }
-                        }
-                    }
-                        
-
-                    if (maze[i, j] == 'X') //Dont work on it if its X
-                    {
-                        if (withDynamite) //Work on it if you have dynamite
-                        {
-                            bool leftStone = j >= 1 ? maze[i, j - 1] == 'X' : false;
-                            bool rightStone = j < x - 1 ? maze[i, j + 1] == 'X' : false;
-                            bool upStone = i >= 1 ? maze[i - 1, j] == 'X' : false;
-                            bool downStone = i < y - 1 ? maze[i + 1, j] == 'X' : false;
-
-                            if (leftStone)
-                            {
-                                maze[i, j - 1] = 'O';
-                                g.AddEdge(vNo, vNo - 1, t);
-                            }
-
-                            if (rightStone)
-                            {
-                                maze[i, j + 1] = 'O';
-                                g.AddEdge(vNo, vNo + 1, t);
-                            }
-
-                            if (upStone)
-                            {
-                                maze[i - 1, j] = 'O';
-                                g.AddEdge(vNo, vNo - x, t);
-                            }
-
-                            if (downStone)
-                            {
-                                maze[i + 1, j] = 'O';
-                                g.AddEdge(vNo, vNo + x, t);
-                            }
-                        }
-                        else
-                        {
-                            vNo++; //Increment vertex counter
-                            continue;
-                        }
-                    }
 
                     //////////////Its an 'O' part///////////////////////
 
                     //The normal part
-                    bool left = j >= 1 ? maze[i, j - 1] != 'X' : false;
-                    bool right = j < x - 1 ? maze[i, j + 1] != 'X' : false;
-                    bool up = i >= 1 ? maze[i - 1, j] != 'X' : false;
-                    bool down = i < y - 1 ? maze[i + 1, j] != 'X' : false;
-
-                    if (left)
+                    if (curChar != 'X')
                     {
-                        g.AddEdge(vNo, vNo - 1);
-                    }
+                        bool left = j >= 1 ? maze[i, j - 1] != 'X' : false;
+                        bool right = j < x - 1 ? maze[i, j + 1] != 'X' : false;
+                        bool up = i >= 1 ? maze[i - 1, j] != 'X' : false;
+                        bool down = i < y - 1 ? maze[i + 1, j] != 'X' : false;
 
-                    if (right)
-                    {
-                        g.AddEdge(vNo, vNo + 1);
-                    }
-
-                    if (up)
-                    {
-                        g.AddEdge(vNo, vNo - x);
-                    }
-
-                    if (down)
-                    {
-                        g.AddEdge(vNo, vNo + x);
-                    }
-
-                    //The dynamite part
-                    if (withDynamite)
-                    {
-                        bool leftStone = j >= 1 ? maze[i, j - 1] == 'X' : false;
-                        bool rightStone = j < x - 1 ? maze[i, j + 1] == 'X' : false;
-                        bool upStone = i >= 1 ? maze[i - 1, j] == 'X' : false;
-                        bool downStone = i < y - 1 ? maze[i + 1, j] == 'X' : false;
-
-                        if (leftStone)
+                        if (left)
                         {
-                            maze[i, j - 1] = 'O';
-                            g.AddEdge(vNo, vNo - 1, t);
+                            bool isAdded = g.AddEdge(vNo, vNo - 1);
+                            if (!isAdded)
+                                Console.WriteLine("COULDNT ADD EDGE");
                         }
 
-                        if (rightStone)
+
+                        if (right)
                         {
-                            maze[i, j + 1] = 'O';
-                            g.AddEdge(vNo, vNo + 1, t);
+                            bool isAdded = g.AddEdge(vNo, vNo + 1);
+                            if (!isAdded)
+                                Console.WriteLine("COULDNT ADD EDGE");
                         }
 
-                        if (upStone)
+                        if (up)
                         {
-                            maze[i - 1, j] = 'O';
-                            g.AddEdge(vNo, vNo - x, t);
+                            bool isAdded = g.AddEdge(vNo, vNo - x);
+                            if (!isAdded)
+                                Console.WriteLine("COULDNT ADD EDGE");
                         }
 
-                        if (downStone)
+                        if (down)
                         {
-                            maze[i + 1, j] = 'O';
-                            g.AddEdge(vNo, vNo + x, t);
+                            bool isAdded = g.AddEdge(vNo, vNo + x);
+                            if (!isAdded)
+                                Console.WriteLine("COULDNT ADD EDGE");
+                        }
+
+                        if (withDynamite) //Work on it if you have dynamite
+                        {
+                            if (leftChar == 'X')
+                            {
+                                maze[i, j - 1] = 'O';
+                                bool isAdded = g.AddEdge(vNo, vNo - 1, t);
+                                if (!isAdded)
+                                    Console.WriteLine("COULDNT ADD EDGE");
+                            }
+                            if (rightChar == 'X')
+                            {
+                                maze[i, j + 1] = 'O';
+                                bool isAdded = g.AddEdge(vNo, vNo + 1, t);
+                                if (!isAdded)
+                                    Console.WriteLine("COULDNT ADD EDGE");
+                            }
+                            if (upChar == 'X')
+                            {
+                                maze[i - 1, j] = 'O';
+                                bool isAdded = g.AddEdge(vNo, vNo - x, t);
+                                if (!isAdded)
+                                    Console.WriteLine("COULDNT ADD EDGE");
+                            }
+                            if (downChar == 'X')
+                            {
+                                maze[i + 1, j] = 'O';
+                                bool isAdded = g.AddEdge(vNo, vNo + x, t);
+                                if (!isAdded)
+                                    Console.WriteLine("COULDNT ADD EDGE");
+                            }
                         }
                     }
 
@@ -218,6 +127,31 @@ namespace ASD
             if (paths[end].Last == null)
                 return -1;
 
+            Edge[] edgePath = PathsInfo.ConstructPath(start, end, paths);
+            StringBuilder str = new StringBuilder();
+            for (int i = 0; i < edgePath.Length; i++)
+            {
+                int curXFrom = edgePath[i].From / x;
+                int curYFrom = edgePath[i].From - x * curXFrom;
+                int curXTo = edgePath[i].To / x;
+                int curYTo = edgePath[i].To - x * curXTo;
+
+                if (curXFrom == curXTo)
+                {
+                    if (curYFrom < curYTo)
+                        str.Append('E');
+                    else
+                        str.Append('W');
+                }
+                else
+                {
+                    if (curXFrom < curXTo)
+                        str.Append('S');
+                    else
+                        str.Append('N');
+                }
+            }
+            path = str.ToString();
             return (int)paths[end].Dist;
         }
 
@@ -235,35 +169,37 @@ namespace ASD
             int y = maze.GetLength(0);
             int layerOffset = x * y;
             int vNo = 0;
-            int startFirst = 0;
-            int endLast = 0;
+            int start = 0;
+            int end = 0;
 
-            Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, (k+1) * x * y);
-            for(int p = 0; p < k; p++)
+            Graph g = new AdjacencyListsGraph<AVLAdjacencyList>(true, (k + 1) * x * y);
+            for (int p = 0; p <= k; p++)
             {
                 for (int i = 0; i < y; i++)
                 {
                     for (int j = 0; j < x; j++)
                     {
-                        if(maze[i,j] == 'S' && p == 0)
+                        if (maze[i, j] == 'S' && p == 0)
                         {
-                            startFirst = vNo;
+                            start = vNo;
                         }
-                        if (maze[i, j] == 'E' && p == k - 1)
+                        if (maze[i, j] == 'E')
                         {
-                            endLast = vNo;
+                            end = vNo;
                         }
 
+                        char curChar = maze[i, j];
                         char up = i >= 1 ? maze[i - 1, j] : 'N';
                         char down = i < y - 1 ? maze[i + 1, j] : 'N';
                         char left = j >= 1 ? maze[i, j - 1] : 'N';
                         char right = j < x - 1 ? maze[i, j + 1] : 'N';
 
                         int nextLayerVert = vNo + layerOffset;
-                        switch(up)
+                        switch (up)
                         {
                             case 'X':
-                                g.AddEdge(vNo, nextLayerVert - x, t);
+                                if (p < k)
+                                    g.AddEdge(vNo, nextLayerVert - x, t);
                                 break;
                             case 'N':
                                 break;
@@ -274,7 +210,8 @@ namespace ASD
                         switch (down)
                         {
                             case 'X':
-                                g.AddEdge(vNo, nextLayerVert + x, t);
+                                if(p < k)
+                                    g.AddEdge(vNo, nextLayerVert + x, t);
                                 break;
                             case 'N':
                                 break;
@@ -285,7 +222,8 @@ namespace ASD
                         switch (left)
                         {
                             case 'X':
-                                g.AddEdge(vNo, nextLayerVert - 1, t);
+                                if (p < k)
+                                    g.AddEdge(vNo, nextLayerVert - 1, t);
                                 break;
                             case 'N':
                                 break;
@@ -296,7 +234,8 @@ namespace ASD
                         switch (right)
                         {
                             case 'X':
-                                g.AddEdge(vNo, nextLayerVert + 1, t);
+                                if (p < k)
+                                    g.AddEdge(vNo, nextLayerVert + 1, t);
                                 break;
                             case 'N':
                                 break;
@@ -311,13 +250,18 @@ namespace ASD
 
             path = null; // tej linii na laboratorium nie zmieniamy!
             PathsInfo[] paths;
-            if (!g.DijkstraShortestPaths(startFirst, out paths))
+            if (!g.DijkstraShortestPaths(start, out paths))
                 return -1;
 
-            if (paths[endLast].Last == null)
-                return -1;
+            int ending = end;
 
-            return (int)paths[endLast].Dist;
+            while(end >= 0)
+            {
+                if (paths[end].Last != null)
+                    return (int)paths[end].Dist;
+                end -= layerOffset;
+            }
+            return -1;
         }
     }
 }
