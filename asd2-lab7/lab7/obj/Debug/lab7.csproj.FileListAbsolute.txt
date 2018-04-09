@@ -7,3 +7,10 @@ h:\Windows7\Desktop\ASD2\lab7\lab7\obj\Debug\lab7.csprojResolveAssemblyReference
 h:\Windows7\Desktop\ASD2\lab7\lab7\obj\Debug\lab7.csproj.CoreCompileInputs.cache
 h:\Windows7\Desktop\ASD2\lab7\lab7\obj\Debug\lab7.exe
 h:\Windows7\Desktop\ASD2\lab7\lab7\obj\Debug\lab7.pdb
+X:\Programming\C#\asd2\asd2-lab7\lab7\bin\Debug\lab7.exe.config
+X:\Programming\C#\asd2\asd2-lab7\lab7\bin\Debug\lab7.exe
+X:\Programming\C#\asd2\asd2-lab7\lab7\bin\Debug\lab7.pdb
+X:\Programming\C#\asd2\asd2-lab7\lab7\obj\Debug\lab7.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2\asd2-lab7\lab7\obj\Debug\lab7.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2\asd2-lab7\lab7\obj\Debug\lab7.exe
+X:\Programming\C#\asd2\asd2-lab7\lab7\obj\Debug\lab7.pdb
