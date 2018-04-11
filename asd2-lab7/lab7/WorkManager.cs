@@ -5,8 +5,8 @@ namespace ASD
 {
     public class WorkManager : MarshalByRefObject
     {
-        int difference = int.MaxValue;
-        int[] minResult;
+        int difference = int.MaxValue; //przechowuje najmniejsza aktualnie znaleziona roznice (etap 2)
+        int[] minResult; //przechowuje najmniejsze aktualnie znalezione ustawienie (etap 2)
 
         /// <summary>
         /// Implementacja wersji 1
@@ -37,7 +37,7 @@ namespace ASD
             difference = int.MaxValue;
             minResult = new int[blocks.Length];
             int[] result = new int[blocks.Length];
-            if (blocks.Sum() < 2 * expectedBlockSum)
+            if (blocks.Sum() < 2 * expectedBlockSum) //sprawdzenie, czy problem jest mozliwy do rozwiazania
                 return null;
 
             problemSolverSec(blocks, result, 0, expectedBlockSum, expectedBlockSum, 0, 0);
@@ -59,12 +59,14 @@ namespace ASD
                 {
                     difference = Math.Abs(blockCountA - blockCountB);
                     result.CopyTo(minResult, 0);
-                    return false;
+
+                    //Jesli 0, nic lepszego juz sie nie znajdzie, jesli nie - szukaj dalej
+                    if (difference == 0)
+                        return true;
+                    else
+                        return false;
                 }
 
-                //Jesli 0, nic lepszego juz sie nie znajdzie
-                if (difference == 0)
-                    return true;
             }
             //Jesli startingPoint wychodzi poza tablice
             if (startingPoint >= blocks.Length)
@@ -75,12 +77,16 @@ namespace ASD
 
             result[startingPoint] = 1;
             if (problemSolverSec(blocks, result, startingPoint + 1, remainingSumA - blocks[startingPoint], remainingSumB, blockCountA + 1, blockCountB))
+            {
                 return true;
+            }  
             else
             {
                 result[startingPoint] = 2;
                 if (problemSolverSec(blocks, result, startingPoint + 1, remainingSumA, remainingSumB - blocks[startingPoint], blockCountA, blockCountB + 1))
+                {
                     return true;
+                }
                 else
                 {
                     result[startingPoint] = 0;
@@ -91,6 +97,8 @@ namespace ASD
                 }
             }
         }
+
+
 
         bool problemSolver(int[] blocks, int[] result, int startingPoint, int remainingSumA, int remainingSumB)
         {
