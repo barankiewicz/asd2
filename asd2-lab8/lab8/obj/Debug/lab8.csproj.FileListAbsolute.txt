@@ -1,0 +1,15 @@
+h:\Windows7\Desktop\ASD2\lab8\lab8\bin\Debug\lab8.exe.config
+h:\Windows7\Desktop\ASD2\lab8\lab8\bin\Debug\lab8.exe
+h:\Windows7\Desktop\ASD2\lab8\lab8\bin\Debug\lab8.pdb
+h:\Windows7\Desktop\ASD2\lab8\lab8\obj\Debug\lab8.csprojResolveAssemblyReference.cache
+h:\Windows7\Desktop\ASD2\lab8\lab8\obj\Debug\lab8.csproj.CoreCompileInputs.cache
+h:\Windows7\Desktop\ASD2\lab8\lab8\obj\Debug\lab8.exe
+h:\Windows7\Desktop\ASD2\lab8\lab8\obj\Debug\lab8.pdb
+h:\Windows7\Desktop\ASD2\lab8\lab8\bin\Debug\TestSet.dll
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\bin\Debug\lab8.exe.config
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\bin\Debug\lab8.exe
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\bin\Debug\lab8.pdb
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\obj\Debug\lab8.csprojResolveAssemblyReference.cache
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\obj\Debug\lab8.csproj.CoreCompileInputs.cache
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\obj\Debug\lab8.exe
+C:\Users\spankie\Projekty (Programowanie)\asd2\asd2-lab8\lab8\obj\Debug\lab8.pdb
