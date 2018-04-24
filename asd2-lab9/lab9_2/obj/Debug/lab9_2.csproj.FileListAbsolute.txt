@@ -1,0 +1,9 @@
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\lab9_2.exe.config
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\lab9_2.exe
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\lab9_2.pdb
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.csprojResolveAssemblyReference.cache
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.csproj.CoreCompileInputs.cache
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.exe
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.pdb
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\Graph.dll
+h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\TestSet.dll
