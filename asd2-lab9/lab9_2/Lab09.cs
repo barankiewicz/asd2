@@ -41,16 +41,16 @@ namespace ASD
             List<Edge> allEdges = new List<Edge>();
             List<Edge> ret = new List<Edge>();
 
-            Predicate<Edge> ve = delegate (Edge e)
-            {
-                if(e.From < e.To)
-                    allEdges.Add(e);
-                return true;
-            };
-            graph.GeneralSearchAll<EdgesStack>(null, null, ve, out cc);
+            //Predicate<Edge> ve = delegate (Edge e)
+            //{
+            //    if(e.From < e.To)
+            //        allEdges.Add(e);
+            //    return true;
+            //};
+            //graph.GeneralSearchAll<EdgesStack>(null, null, ve, out cc);
 
             bool[] visitedVertices = new bool[graph.VerticesCount];
-            if (findMatching(graph, k, allEdges, visitedVertices, ret, 0))
+            if (findMatching(graph, k, visitedVertices, ret, 0))
             {
                 matching = ret.ToArray();
                 return true;
@@ -102,40 +102,37 @@ namespace ASD
             return true;
         }
 
-        bool findMatching(Graph g, int k, List<Edge> list, bool[] visited, List<Edge> matching, int start)
+        bool findMatching(Graph g, int k, bool[] visited, List<Edge> matching, int start)
         {
             if (matching.Count == k)
                 return true;
-            if (start >= list.Count)
+            if (start >= visited.Length)
+                return false;
+            if (visited[start])
+                return false;
+            if (start >= visited.Length)
                 return false;
             if (matching.Count > k)
                 return false;
 
-            int newStart = -1;
-            for(int j = start; j < list.Count; j++)
+            foreach(Edge e in g.OutEdges(start))
             {
-                if (!canAdd(list[j], visited, g))
+                if (!canAdd(e, visited, g))
                     continue;
 
-                matching.Add(list[j]);
-                visited[list[j].To] = true;
-                visited[list[j].From] = true;
-                newStart = j + 1;
-                break;
-            }
-            if (newStart == -1)
-            {
-                matching = new List<Edge>();
-                visited = new bool[g.VerticesCount];
-                initialStart++;
+                matching.Add(e);
 
-                if (findMatching(g, k, list, visited, matching, initialStart))
+                visited[e.To] = true;
+                visited[e.From] = true;
+                if (findMatching(g, k, visited, matching, start + 1))
                     return true;
-                return false;
-            }
-                //return false;
 
-            if(findMatching(g, k, list, visited, matching, newStart))
+                matching.Remove(e);
+                visited[e.To] = false;
+                visited[e.From] = false;
+            }
+
+            if (findMatching(g, k, visited, matching, start + 1))
                 return true;
             return false;
         }
