@@ -160,8 +160,8 @@
             sizes[8] = 3;
             bool_results[8] = true;
             maximal_results[8] = 21;
-            limits1[8] = 3;
-            limits2[8] = 60;
+            limits1[8] = 600;
+            limits2[8] = 600;
 
             //gesty duzy graf losowy nr 2
             int g9vc = 200;
@@ -230,12 +230,12 @@
                 if (i < n1)
                 {
                     TestSets["LabInducedMatchingTests"].TestCases.Add(new InducedMatchingTestCase(1, null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
-                    TestSets["LabMaximalInducedMatchingTests"].TestCases.Add(new MaximalInducedMatchingTestCase(1, null, descriptions[i], graphs[i], maximal_results[i]));
+                    //TestSets["LabMaximalInducedMatchingTests"].TestCases.Add(new MaximalInducedMatchingTestCase(1, null, descriptions[i], graphs[i], maximal_results[i]));
                 }
                 else
                 {
                     TestSets["LabInducedMatchingPerformanceTests"].TestCases.Add(new InducedMatchingTestCase(limits1[i], null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
-                    TestSets["LabMaximalInducedMatchingPerformanceTests"].TestCases.Add(new MaximalInducedMatchingTestCase(limits2[i], null, descriptions[i], graphs[i], maximal_results[i]));
+                    //TestSets["LabMaximalInducedMatchingPerformanceTests"].TestCases.Add(new MaximalInducedMatchingTestCase(limits2[i], null, descriptions[i], graphs[i], maximal_results[i]));
                 }
             }
         }

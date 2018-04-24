@@ -7,3 +7,10 @@ h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.exe
 h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\obj\Debug\lab9_2.pdb
 h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\Graph.dll
 h:\Windows7\Desktop\ASD2\lab9_2\lab9_2\bin\Debug\TestSet.dll
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\bin\Debug\lab9_2.exe.config
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\bin\Debug\lab9_2.exe
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\bin\Debug\lab9_2.pdb
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\obj\Debug\lab9_2.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\obj\Debug\lab9_2.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\obj\Debug\lab9_2.exe
+X:\Programming\C#\asd2\asd2-lab9\lab9_2\obj\Debug\lab9_2.pdb
