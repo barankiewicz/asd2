@@ -183,7 +183,7 @@
             bool_results[10] = true;
             maximal_results[10] = 743;
             limits1[10] = 1;
-            limits2[10] = 65;
+            limits2[10] = 10005;
 
             //rzadki graf losowy nr 2
             int g11vc = 45;
@@ -229,13 +229,13 @@
             {
                 if (i < n1)
                 {
-                    TestSets["LabInducedMatchingTests"].TestCases.Add(new InducedMatchingTestCase(1, null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
-                    //TestSets["LabMaximalInducedMatchingTests"].TestCases.Add(new MaximalInducedMatchingTestCase(1, null, descriptions[i], graphs[i], maximal_results[i]));
+                    //TestSets["LabInducedMatchingTests"].TestCases.Add(new InducedMatchingTestCase(1, null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
+                    TestSets["LabMaximalInducedMatchingTests"].TestCases.Add(new MaximalInducedMatchingTestCase(1, null, descriptions[i], graphs[i], maximal_results[i]));
                 }
                 else
                 {
-                    TestSets["LabInducedMatchingPerformanceTests"].TestCases.Add(new InducedMatchingTestCase(limits1[i], null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
-                    //TestSets["LabMaximalInducedMatchingPerformanceTests"].TestCases.Add(new MaximalInducedMatchingTestCase(limits2[i], null, descriptions[i], graphs[i], maximal_results[i]));
+                    //TestSets["LabInducedMatchingPerformanceTests"].TestCases.Add(new InducedMatchingTestCase(limits1[i], null, descriptions[i], graphs[i], sizes[i], bool_results[i]));
+                    TestSets["LabMaximalInducedMatchingPerformanceTests"].TestCases.Add(new MaximalInducedMatchingTestCase(limits2[i], null, descriptions[i], graphs[i], maximal_results[i]));
                 }
             }
         }
