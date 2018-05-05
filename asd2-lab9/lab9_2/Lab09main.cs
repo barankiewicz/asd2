@@ -183,7 +183,7 @@
             bool_results[10] = true;
             maximal_results[10] = 743;
             limits1[10] = 1;
-            limits2[10] = 10005;
+            limits2[10] = 65;
 
             //rzadki graf losowy nr 2
             int g11vc = 45;
@@ -206,7 +206,7 @@
             sizes[12] = 11;
             bool_results[12] = true;
             maximal_results[12] = 209;
-            limits1[12] = 1;
+            limits1[12] = 378903433;
             limits2[12] = 22;
 
             //duza klika K200

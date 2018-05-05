@@ -1,0 +1,4 @@
+digraph
+{
+	node [shape=circle, label="0 (1)"] 0;
+}

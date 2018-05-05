@@ -19,6 +19,7 @@ namespace ASD
         public int initialStart = 0;
         double maxSum = -1; //przechowuje najmniejsza aktualnie znaleziona roznice (etap 2)
         Edge[] maxResult; //przechowuje najmniejsze aktualnie znalezione ustawienie (etap 2)
+        bool[] useless;
 
         /// <summary>
         /// Funkcja znajduje dowolne skojarzenie indukowane o rozmiarze k w grafie graph
@@ -39,34 +40,10 @@ namespace ASD
             if (k > graph.EdgesCount)
                 return false;
 
-            double density = (double)(2 * graph.EdgesCount) / (double)(graph.VerticesCount * (graph.VerticesCount - 1));
             bool[] visitedVertices = new bool[graph.VerticesCount];
-            List<int> visited = new List<int>();
             List<Edge> ret = new List<Edge>();
-            int[] verticesDegSorted = new int[graph.VerticesCount];
 
-            //MNIEJ NIZ DRZEWOOOOOO, MNIEJ NIZ DRZEWOOOOOOO
-            //if (density < 0.1)
-            //{
-            //    int cc;
-            //    List<Edge> allEdges = new List<Edge>();
-            //    Predicate<Edge> ve = delegate (Edge e)
-            //    {
-            //        if (e.From < e.To)
-            //            allEdges.Add(e);
-            //        return true;
-            //    };
-            //    graph.GeneralSearchAll<EdgesStack>(null, null, ve, out cc);
-
-            //    if (findMatchingEdges(graph, k, allEdges, visitedVertices, visited, ret, 0))
-            //    {
-            //        matching = ret.ToArray();
-            //        return true;
-            //    }
-            //    return false;
-            //}
-
-            if (findMatching(graph, k, visitedVertices, visited, ret, 0))
+            if (findMatching(graph, k, visitedVertices, ret, 0))
             {
                 matching = ret.ToArray();
                 return true;
@@ -87,6 +64,7 @@ namespace ASD
         /// </remarks>
         public double MaximalInducedMatching(Graph graph, out Edge[] matching)
         {
+            useless = new bool[graph.VerticesCount];
             matching = null;
             maxSum = 0;
             maxResult = new Edge[1];
@@ -97,7 +75,8 @@ namespace ASD
                 vertSums[i] = -1;
             List<int> visited = new List<int>();
             List<Edge> ret = new List<Edge>();
-            findMaxMatching(graph, visitedVertices, visited, ret, 0, 0, 0, vertSums);
+
+            findMaxMatching(graph, visitedVertices, visited, ret, 0, 0, 0, vertSums, false);
 
             matching = maxResult;
             if (matching[0].From == matching[0].To)
@@ -119,10 +98,12 @@ namespace ASD
 
                 if (!g.AddEdge(e.From, visitedList[i]))
                     return false;
+                    
                 g.DelEdge(e.From, visitedList[i]);
 
                 if (!g.AddEdge(e.To, visitedList[i]))
                     return false;
+                    
                 g.DelEdge(e.To, visitedList[i]);
             }
             return true;
@@ -150,7 +131,7 @@ namespace ASD
             return true;
         }
 
-        double findMaxMatching(Graph g, bool[] visited, List<int> visitedList, List<Edge> matching, int start, double curSum, double midSum, double[] vertSums)
+        double findMaxMatching(Graph g, bool[] visited, List<int> visitedList, List<Edge> matching, int start, double curSum, double midSum, double[] vertSums, bool problem)
         {
             if (start >= visited.Length)
                 return -1;
@@ -164,13 +145,13 @@ namespace ASD
                 if (flag)
                     g.DelEdge(e.From, start);
                 else
-                    return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, midSum, vertSums);
+                    return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, midSum, vertSums, false);
 
                 flag = g.AddEdge(e.To, start);
                 if (flag)
                     g.DelEdge(e.To, start);
                 else
-                    return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, midSum, vertSums);
+                    return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, midSum, vertSums, false);
             }
 
             double max = -1;
@@ -179,8 +160,13 @@ namespace ASD
                 if (!canAdd(e, visited, visitedList, g))
                     continue;
 
-                //if (vertSums[e.To] != -1 && curSum + vertSums[e.To] < maxSum)
-                //    continue;
+                if (e.Weight < 0)
+                    continue;
+
+                //if (e.From >= e.To) continue;
+
+                if (g.OutDegree(e.To) == 0 && curSum + e.Weight <= maxSum)
+                    continue;
                 visited[e.To] = true;
                 visited[e.From] = true;
                 matching.Add(e);
@@ -195,9 +181,10 @@ namespace ASD
                     matching.CopyTo(maxResult, 0);
                 }
 
-                if (findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, 0, vertSums) != -1)
+                if (findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, 0, vertSums, false) != -1)
                     return maxSum;
 
+                useless[start] = true;
                 if (midSum > max)
                     max = midSum;
                 visited[e.To] = false;
@@ -206,14 +193,70 @@ namespace ASD
                 visitedList.RemoveAt(visitedList.Count - 1);
                 visitedList.RemoveAt(visitedList.Count - 1);
                 curSum -= e.Weight;
-                midSum -= e.Weight;
             }
-            if(max!=-1)
-                vertSums[start] = max;
-            return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, midSum, vertSums);
+
+            return findMaxMatching(g, visited, visitedList, matching, start + 1, curSum, 0, vertSums, true);
         }
 
-        bool findMatching(Graph g, int k, bool[] visited, List<int> visitedList, List<Edge> matching, int start)
+        double findMaxMatchingTes(Graph g, bool[] visited, List<int> visitedList, List<Edge> matching, int start, double curSum, double midSum, double[] vertSums)
+        {
+            if (start >= visited.Length)
+                return -1;
+            if (visited[start])
+                return -1;
+
+            //First helper array; fill it with 'start' vertex' neighbours
+            bool[] helper = (bool[])visited.Clone();
+            helper[start] = true;
+            foreach (Edge e in g.OutEdges(start))
+                helper[e.To] = true;
+
+            //Second helper array
+            bool[] bigHelper = (bool[])helper.Clone();
+            int nextStart = 0;
+
+            double max = -1;
+            foreach (Edge e in g.OutEdges(start))
+            {
+                if (visited[e.To])
+                    continue;
+
+                if (e.Weight < 0)
+                    continue;
+
+                //Fill second helper array with e.To's neighbours
+                bigHelper = (bool[])helper.Clone();
+                bigHelper[e.To] = true;
+                bigHelper[e.From] = true;
+
+                foreach (Edge et in g.OutEdges(e.To))
+                    bigHelper[et.To] = true;
+                matching.Add(e);
+
+                curSum += e.Weight;
+                if (curSum > maxSum)
+                {
+                    maxSum = curSum;
+                    maxResult = new Edge[matching.Count];
+                    matching.CopyTo(maxResult, 0);
+                }
+
+                //Search for next viable vertex
+                for (nextStart = start; nextStart < bigHelper.Length; nextStart++)
+                    if (!bigHelper[nextStart])
+                        break;
+
+                if (findMaxMatchingTes(g, bigHelper, visitedList, matching, nextStart, curSum, 0, vertSums) != -1)
+                    return maxSum;
+
+                //visited[e.To] = false;
+                //visited[e.From] = false;
+                matching.RemoveAt(matching.Count - 1);
+                curSum -= e.Weight;
+            }
+            return findMaxMatchingTes(g, visited, visitedList, matching, start + 1, curSum, 0, vertSums);
+        }
+        bool findMatching(Graph g, int k, bool[] visited, List<Edge> matching, int start)
         {
             if (matching.Count == k)
                 return true;
@@ -221,116 +264,44 @@ namespace ASD
                 return false;
             if (visited[start])
                 return false;
-            if (matching.Count > k)
-                return false;
             if (matching.Count + (g.VerticesCount - start) < k)
                 return false;
-            foreach (Edge e in matching)
-            {
-                bool flag = false;
-                flag = g.AddEdge(e.From, start);
-                if (flag)
-                    g.DelEdge(e.From, start);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
 
-                flag = g.AddEdge(e.To, start);
-                if (flag)
-                    g.DelEdge(e.To, start);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
-            }
+            //First helper array; fill it with 'start' vertex' neighbours
+            bool[] helper = (bool[]) visited.Clone();
+            helper[start] = true;
+            foreach(Edge e in g.OutEdges(start))
+                helper[e.To] = true;
+
+            //Second helper array
+            bool[] bigHelper = (bool[])helper.Clone();
+            int nextStart = 0;
 
             foreach (Edge e in g.OutEdges(start))
             {
-                if (!canAdd(e, visited, visitedList, g))
+                if (visited[e.To])
                     continue;
 
-                visited[e.To] = true;
-                visited[e.From] = true;
+                //Fill second helper array with e.To's neighbours
+                bigHelper = (bool[])helper.Clone();
+                bigHelper[e.To] = true;
+                bigHelper[e.From] = true;
+
+                foreach (Edge et in g.OutEdges(e.To))
+                    bigHelper[et.To] = true;
                 matching.Add(e);
-                visitedList.Add(e.To);
-                visitedList.Add(e.From);
-                if (findMatching(g, k, visited, visitedList, matching, e.To + 1))
+                //Search for next viable vertex
+                for (nextStart = 0; nextStart < visited.Length; nextStart++)
+                    if (!bigHelper[nextStart])
+                        break;
+                if (findMatching(g, k, bigHelper, matching, nextStart))
                     return true;
 
                 visited[e.To] = false;
                 visited[e.From] = false;
                 matching.RemoveAt(matching.Count - 1);
-                visitedList.RemoveAt(visitedList.Count - 1);
-                visitedList.RemoveAt(visitedList.Count - 1);
             }
-            return findMatching(g, k, visited, visitedList, matching, start + 2);
-        }
-
-        bool findMatchingEdges(Graph g, int k, List<Edge> list, bool[] visited, List<int> visitedList, List<Edge> matching, int start)
-        {
-            if (matching.Count == k)
-                return true;
-            if (start >= list.Count)
-                return false;
-            if (matching.Count > k)
-                return false;
-
-            if (start >= visited.Length)
-                return false;
-            if (visited[list[start].From])
-                return false;
-            if (visited[list[start].To])
-                return false;
-            if (matching.Count > k)
-                return false;
-            if (matching.Count + (g.EdgesCount - start) < k)
-                return false;
-            foreach (Edge e in matching)
-            {
-                bool flag = false;
-                flag = g.AddEdge(e.From, list[start].From);
-                if (flag)
-                    g.DelEdge(e.From, list[start].From);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
-
-                flag = g.AddEdge(e.To, list[start].From);
-                if (flag)
-                    g.DelEdge(e.To, list[start].From);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
-
-                flag = g.AddEdge(e.From, list[start].To);
-                if (flag)
-                    g.DelEdge(e.From, list[start].To);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
-
-                flag = g.AddEdge(e.To, list[start].To);
-                if (flag)
-                    g.DelEdge(e.To, list[start].To);
-                else
-                    return findMatching(g, k, visited, visitedList, matching, start + 1);
-            }
-
-            for (int j = start; j < list.Count; j++)
-            {
-                if (!canAdd(list[j], visited, visitedList, g))
-                    continue;
-
-                matching.Add(list[j]);
-                visited[list[j].To] = true;
-                visited[list[j].From] = true;
-                visitedList.Add(list[j].To);
-                visitedList.Add(list[j].From);
-
-                if (findMatchingEdges(g, k, list, visited, visitedList, matching, start + 1))
-                    return true;
-                matching.RemoveAt(matching.Count - 1);
-                visited[list[j].To] = false;
-                visited[list[j].From] = false;
-                visitedList.RemoveAt(visitedList.Count - 1);
-                visitedList.RemoveAt(visitedList.Count - 1);
-            }
-
-            return findMatchingEdges(g, k, list, visited, visitedList, matching, start + 1);
+            return findMatching(g, k, visited, matching, start + 1);
         }
     }
 }
