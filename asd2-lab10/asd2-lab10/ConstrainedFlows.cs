@@ -9,7 +9,7 @@ namespace ASD
         // testy, dla których ma być generowany obrazek
         // graf w ostatnim teście ma bardzo dużo wierzchołków, więc lepiej go nie wyświetlać
         public static int[] circulationToDisplay = {  };
-        public static int[] constrainedFlowToDisplay = { 3 };
+        public static int[] constrainedFlowToDisplay = { 1 };
 
         /// <summary>
         /// Metoda znajdująca cyrkulację w grafie, z określonymi żądaniami wierzchołków.
@@ -100,7 +100,64 @@ namespace ASD
         /// </hint>
         public Graph FindConstrainedFlow(int source, int sink, Graph G, Graph lowerBounds)
         {
-            return lowerBounds;  // zmienić
+
+            //Generate middle graph which has all capacities calculated as: G.GetEdgeWeight(e) - lowerBounds.GetEdgeWeight(e)
+            Graph middle = G.Clone();
+            Predicate<Edge> generateMiddle = delegate (Edge e)
+            {
+                double val = -lowerBounds.GetEdgeWeight(e.From, e.To);
+                middle.ModifyEdgeWeight(e.From, e.To, val);
+                return true;
+            };
+            middle.GeneralSearchFrom<EdgesStack>(0, null, null, generateMiddle);
+
+            Graph inter = G.Clone();
+            //Generate demands array based on lowerBounds graph
+            double[] newDemands = new double[G.VerticesCount];
+            double[] positiveDemands = new double[G.VerticesCount];
+            double[] negativeDemands = new double[G.VerticesCount];
+            List<int> fromSource = new List<int>();
+            List<int> toSink = new List<int>();
+            Predicate<Edge> ve = delegate (Edge e)
+            {
+                if (e.From == source)
+                {
+                    //newDemands[e.To] -= lowerBounds.GetEdgeWeight(source, e.To);
+                    fromSource.Add(e.To);
+                    return true;
+                }
+
+                if (e.To == sink)
+                {
+                    //newDemands[e.From] += lowerBounds.GetEdgeWeight(e.From, sink);
+                    toSink.Add(e.From);
+                    return true;
+                }
+
+                newDemands[e.From] += e.Weight;
+                newDemands[e.To] -= e.Weight;
+                return true;
+            };
+            lowerBounds.GeneralSearchFrom<EdgesStack>(0, null, null, ve);
+
+            //Get source's demand
+            foreach(int i in fromSource)
+                if(newDemands[i]>0)
+                    newDemands[source] -= newDemands[i];
+
+            foreach (int i in toSink)
+                if (newDemands[i] > 0)
+                    newDemands[sink] += newDemands[i];
+
+            newDemands[source] = -2;
+            newDemands[sink] = 2;
+            Graph helper = FindCirculation(middle, newDemands);
+
+            //Add lower bounds to the graph
+
+            
+            //return G;
+            return helper;
         }
 
     }
