@@ -9,7 +9,7 @@ namespace ASD
         // testy, dla których ma być generowany obrazek
         // graf w ostatnim teście ma bardzo dużo wierzchołków, więc lepiej go nie wyświetlać
         public static int[] circulationToDisplay = {  };
-        public static int[] constrainedFlowToDisplay = { 1 };
+        public static int[] constrainedFlowToDisplay = { 4 };
 
         /// <summary>
         /// Metoda znajdująca cyrkulację w grafie, z określonymi żądaniami wierzchołków.
@@ -41,12 +41,12 @@ namespace ASD
                     sumPositive += demands[i];
                 else
                     sumNegative += demands[i];
-                
+
             if (sumPositive + sumNegative != 0)
                 return null;
 
             //Add all edges to network
-            for(int i = 0; i < G.VerticesCount; i++)
+            for (int i = 0; i < G.VerticesCount; i++)
                 foreach (Edge e in G.OutEdges(i))
                     network.AddEdge(e);
 
@@ -111,25 +111,22 @@ namespace ASD
             };
             middle.GeneralSearchFrom<EdgesStack>(0, null, null, generateMiddle);
 
-            Graph inter = G.Clone();
             //Generate demands array based on lowerBounds graph
             double[] newDemands = new double[G.VerticesCount];
-            double[] positiveDemands = new double[G.VerticesCount];
-            double[] negativeDemands = new double[G.VerticesCount];
             List<int> fromSource = new List<int>();
             List<int> toSink = new List<int>();
             Predicate<Edge> ve = delegate (Edge e)
             {
                 if (e.From == source)
                 {
-                    //newDemands[e.To] -= lowerBounds.GetEdgeWeight(source, e.To);
+                    newDemands[e.To] -= lowerBounds.GetEdgeWeight(source, e.To);
                     fromSource.Add(e.To);
                     return true;
                 }
 
                 if (e.To == sink)
                 {
-                    //newDemands[e.From] += lowerBounds.GetEdgeWeight(e.From, sink);
+                    newDemands[e.From] += lowerBounds.GetEdgeWeight(e.From, sink);
                     toSink.Add(e.From);
                     return true;
                 }
@@ -140,23 +137,51 @@ namespace ASD
             };
             lowerBounds.GeneralSearchFrom<EdgesStack>(0, null, null, ve);
 
-            //Get source's demand
-            foreach(int i in fromSource)
+            //fix demands for pseudo-sources
+            foreach (int i in fromSource)
                 if(newDemands[i]>0)
                     newDemands[source] -= newDemands[i];
 
+            //fix demands for pseudo-sinks
             foreach (int i in toSink)
-                if (newDemands[i] > 0)
+                if (newDemands[i]<0)
                     newDemands[sink] += newDemands[i];
 
-            newDemands[source] = -2;
-            newDemands[sink] = 2;
+            //Check if positive and negative demands match
+            double sumPositive = 0;
+            double sumNegative = 0;
+            for (int i = 0; i < newDemands.Length; i++)
+                if (newDemands[i] >= 0)
+                    sumPositive += newDemands[i];
+                else
+                    sumNegative += newDemands[i];
+
+            if(sumPositive > -sumNegative)
+            {
+                newDemands[sink] -= Math.Abs(sumPositive + sumNegative);
+            }
+            else if (-sumNegative > sumPositive)
+            {
+                newDemands[sink] += Math.Abs(sumPositive + sumNegative);
+            }
+
+            double biggerSum = Math.Max(sumPositive, Math.Abs(sumNegative));
+            //newDemands[source] = -biggerSum;
+            //newDemands[sink] = biggerSum;
             Graph helper = FindCirculation(middle, newDemands);
 
-            //Add lower bounds to the graph
+            if (helper == null)
+                return null;
 
-            
-            //return G;
+            //If helper exists, add lower bounds to the graph
+            Predicate<Edge> generateConstrainedFlow = delegate (Edge e)
+            {
+                double val = lowerBounds.GetEdgeWeight(e.From, e.To);
+                helper.ModifyEdgeWeight(e.From, e.To, val);
+                return true;
+            };
+            helper.GeneralSearchFrom<EdgesStack>(0, null, null, generateConstrainedFlow);
+
             return helper;
         }
 
