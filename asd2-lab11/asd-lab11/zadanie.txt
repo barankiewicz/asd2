@@ -1,0 +1,145 @@
+Algorytmy i struktury danych 2 - Laboratorium 11. - Planowanie produkcji
+========================================================================
+
+Pliki w zadaniu
+---------------
+
+  * Plik `Lab11Main.cs` zawiera testy opracowanych rozwiązań.
+    _Nie należy modyfikować zawartości tego pliku._
+
+  * Plik `DataStructures.cs` zawiera pomocnicze struktury danych dla
+    zadania. _Nie należy modyfikować zawartości tego pliku._
+
+    * Struktura `PlanData` używana jest do przekazywania danych 
+      wejściowych dotyczących produkcji, magazynu i sprzedaży.
+      W tym kontekście pole `Quantity` oznacza limity produkcji,
+      magazynu lub sprzedaży, zaś pole `Value` - odpowiednio koszt
+      produkcji, koszt przechowania w magazynie lub cenę sprzedaży
+      jednej sztuki.
+
+      Ponadto struktura wykorzystywana jest do zwrócenia danych
+      wyjściowych z pisanych funkcji (liczby wyprodukowanych sztuk
+      telewizorów i otrzymanego zysku). Liczbę telewizorów umieszczamy
+      w polu `Quantity`, zaś zysk - w pole `Value`.
+
+    * Struktura `SimpleWeeklyPlan`, używany w części 1., przechowuje
+      liczbę sztuk wyprodukowanych (`UnitsProduced`), sprzedanych
+      (`UnitsSold`) i przechowanych w magazynie (`UnitsStored`)
+      w każdym tygodniu jako wartości liczbowe całkowite.
+
+    * W strukturze `WeeklyPlan`, używanej w części 2., sprzedaż
+      (`UnitsSold`) określana jest w postaci tablicy wartości
+      całkowitych. Kolejne elementy tej tablicy oznaczają liczbę sztuk
+      sprzedanych kontrahentowi o danym numerze w danym tygodniu.
+      Liczba sztuk wyprodukowanych i przechowanych w magazynie
+      jest reprezentowana identycznie, co w strukturze
+      `SimpleWeeklyPlan`.
+
+  * W pliku `ProductionPlanner.cs` powinno znaleźć się rozwiązanie
+    zadania.
+
+Część 1.
+--------
+Fabryka telewizorów opracowuje plan produkcji i sprzedaży. Produkcja
+w fabryce odbywa się zgodnie z następującymi założeniami:
+
+  * Fabryka w ciągu danego tygodnia może wyprodukować ograniczoną liczbę
+    telewizorów (określoną w polu `Quantity`).
+    Limit produkcji zmienia się z tygodnia na tydzień.
+
+  * Wyprodukowanie jednej sztuki telewizora wiąże się z ustalonym
+    kosztem (określonym w polu `Value`).
+    Koszt produkcji także zmienia się z tygodnia na tydzień.
+
+  * Fabryka sprzedaje telewizory jednemu kontrahentowi. Kontrahent ma
+    ograniczone zapotrzebowanie na towar i kupuje sztuki telewizorów
+    po określonej cenie. Zarówno zapotrzebowanie (`Quantity`),
+    jak i cena sprzedaży telewizorów (`Value`), zmieniają się
+    z tygodnia na tydzień.
+
+  * W razie potrzeby telewizory mogą być przechowane w magazynie,
+    w celu późniejszej sprzedaży. Magazyn ma ograniczoną, stałą
+    pojemność (`Quantity`). Przechowanie jednej sztuki
+    w magazynie przez tydzień wiąże się z niezmiennym kosztem
+    magazynowania (`Value`).
+
+Twoim celem jest wyznaczenie takiego planu produkcji, który maksymalizuje
+produkcję fabryki (`Quantity`), a dla tej maksymalnej produkcji
+maksymalizuje zysk fabryki (`Value` - różnicę przychodów
+ze sprzedaży i kosztów produkcji oraz przechowywania towarów).
+
+Oprócz podania osiągniętego zysku, należy podać szczegóły planu
+w poszczególnych tygodniach produkcji, w postaci tablicy obiektów
+`WeeklyPlan` (ile sztuk wyprodukowano - `UnitsProduced`, ile
+sprzedano - `UnitsSold`, ile przechowano w magazynie - `UnitsStored`).
+
+Część 2.
+--------
+Po pomyślnym rozplanowaniu sprzedaży fabryka rozszerza swoją
+działalność i podpisuje umowy z wieloma kontrahentami.
+
+  * Założenia dotyczące limitów i kosztów produkcji pozostają takie
+    same.
+
+  * Fabryka dalej może przechowywać telewizory w magazynie, na tych
+    samych zasadach, co wcześniej.
+
+  * Fabryka może jednak wybierać, któremu kontrahentowi chce sprzedać
+    ile sztuk telewizorów w danym tygodniu. Każdy kontrahent ma swoje
+    zapotrzebowanie na telewizory, oraz swoją cenę zakupu. Tak jak
+    w części 1., oba parametry zmieniają się z tygodnia na tydzień
+    u każdego z kontrahentów.
+
+Tym razem, Twoim celem jest wyznaczenie planu sprzedaży
+maksymalizującego *wyłącznie* zysk fabryki. Warto zauważyć, że czasami
+zmniejszenie produkcji może skutkować większym zyskiem.
+
+W szczegółowym planie sprzedaży należy określić, ile sztuk sprzedano 
+poszczególnym kontrahentom w danym tygodniu, odpowiednio wypełniając
+pole `UnitsSold`, które w tym przypadku jest tablicą. Ponadto, podobnie
+jak w części 1., należy określić liczbę sztuk wyprodukowanych
+i sprzedanych w każdym tygodniu.
+
+Oczekiwana złożoność obliczeniowa rozwiązania zależy wyłącznie
+od liczby tygodni i kontrahentów. W szczególności oznacza to, że jest
+ona niezależna od maksymalnego zysku i wyznaczonej liczby
+wyprodukowanych telewizorów.
+
+Wskazówka:
+W porównaniu do sieci maksymalizującej w pierwszej kolejności produkcję
+a w drugiej kolejności zyski (jak w części pierwszej), sieć maksymalizująca
+tylko zyski (i nie koniecznie maksymalizująca produkcję) powinna mieć
+dodatkowe wierzchołki i dodatkowe krawędzie o kosztach zerowych.
+A przy konstrukcji optymalnego planu produkcji część przepływu należy zignorować"
+
+
+Uwagi
+-----
+
+W obu etapach przyjmujemy następujące założenia dotyczące danych
+wejściowych:
+
+  * Liczba tygodni w planie jest dodatnia.
+  * Limit produkcji i koszt produkcji jest nieujemny w każdym tygodniu.
+  * Limit sprzedaży i cena sprzedaży jest nieujemna w każdym tygodniu.
+  * Liczba sztuk przechowywanych w magazynie oraz koszt przechowania
+    są nieujemne.
+
+Dodatkowo w drugim etapie, zakładamy, że liczba klientów jest dodatnia.
+
+Funkcje do wyznaczania planu w części domowej powinny weryfikować
+poprawność argumentów i w razie naruszenia jednego z powyższych warunków
+zgłaszać wyjątek `ArgumentException`.
+
+W klasie `ProductionPlanner` znajduje się właściwość `ShowDebug`,
+która pozwala przy testach wyznaczających plan produkcji wypisać
+na konsolę szczegóły skonstruowanego planu.
+
+Punktacja
+---------
+| Etap                                                 | Punktacja |
+|------------------------------------------------------|-----------|
+| Część 1. - wyznaczenie maksymalnej produkcji i zysku | 1,5 pkt.  |
+| Część 1. - wyznaczenie planu produkcji               | 0,5 pkt.  |
+| Część 2. - wyznaczenie maksymalnej produkcji i zysku | 1,5 pkt.  |
+| Część 2. - wyznaczenie planu produkcji               | 0,5 pkt.  |
