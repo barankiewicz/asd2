@@ -1,0 +1,33 @@
+digraph
+{
+	node [shape=circle, label="v0"] 0;
+	node [shape=circle, label="v1"] 1;
+	node [shape=circle, label="v2"] 2;
+	node [shape=circle, label="v3"] 3;
+	node [shape=circle, label="v4"] 4;
+	node [shape=circle, label="v5"] 5;
+	node [shape=circle, label="v6"] 6;
+	node [shape=circle, label="v7"] 7;
+	node [shape=circle, label="v8"] 8;
+	node [shape=circle, label="v9"] 9;
+	0 -> 6 [label="6"]
+	0 -> 7 [label="4"]
+	1 -> 6 [label="10"]
+	1 -> 7 [label="0"]
+	2 -> 6 [label="0"]
+	2 -> 7 [label="5"]
+	3 -> 0 [label="10"]
+	3 -> 1 [label="0"]
+	3 -> 2 [label="0"]
+	3 -> 8 [label="0"]
+	4 -> 1 [label="10"]
+	4 -> 2 [label="5"]
+	4 -> 8 [label="0"]
+	5 -> 2 [label="0"]
+	5 -> 8 [label="5"]
+	6 -> 8 [label="16"]
+	7 -> 8 [label="9"]
+	9 -> 3 [label="10"]
+	9 -> 4 [label="15"]
+	9 -> 5 [label="5"]
+}

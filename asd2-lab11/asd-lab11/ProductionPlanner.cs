@@ -154,14 +154,33 @@ namespace ASD
             //Contrahents vertices
             int contrStart = 2 * n;
 
+            //Console.WriteLine("Wierzcholki:");
+            //Console.WriteLine("Source: " + source);
+            //Console.WriteLine("Target: " + target);
+            //string s = "Magazyny: ";
+            //for(int i = 0; i < n; i++)
+            //    s += (weekMagStart + i).ToString() + ", ";
+            //Console.WriteLine(s);
+
+            //string s1 = "tygodnie: ";
+            //for (int i = 0; i < n; i++)
+            //    s1 += (weeksStart + i).ToString() + ", ";
+            //Console.WriteLine(s1);
+
+            //string s2 = "kontrahenci: ";
+            //for (int i = 0; i < c; i++)
+            //    s2 += (contrStart + i).ToString() + ", ";
+            //Console.WriteLine(s2);
+
+
             //Populate edges going out of / going into week magazine vertices:
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 int v = weekMagStart + i; //current magazine week vertex
 
                 //from source to v
                 Capacities.AddEdge(source, v, production[i].Quantity);
-                Costs.AddEdge(source, v, production[i].Value);
+                Costs.AddEdge(source, v, -production[i].Value);
 
                 //from v to target
                 Capacities.AddEdge(v, target, production[i].Quantity);
@@ -171,10 +190,12 @@ namespace ASD
                 //from v to week vertices
                 for(int j = i; j < n; j++)
                 {
-                    if (i == 0 && j == 0)
-                        continue;
                     int w = weeksStart + j; //current week vertex
-                    Capacities.AddEdge(v, w, storageInfo.Quantity);
+                    if(mult == 0)
+                        Capacities.AddEdge(v, w, production[i].Quantity);
+                    else
+                        Capacities.AddEdge(v, w, storageInfo.Quantity);
+
                     Costs.AddEdge(v, w, mult * storageInfo.Value);
                     mult++;
                 }
@@ -187,8 +208,8 @@ namespace ASD
                 for (int j = 0; j < c; j++)
                 {
                     int v = contrStart + j; //Contrahent vertex
-                    Capacities.AddEdge(v, w, sales[j,i].Quantity);
-                    Costs.AddEdge(v, w, -sales[j, i].Value);
+                    Capacities.AddEdge(w, v, sales[j,i].Quantity);
+                    Costs.AddEdge(w, v, -sales[j, i].Value);
                 }
             }
 
@@ -196,7 +217,7 @@ namespace ASD
             for(int i = 0; i < c; i++)
             {
                 int v = contrStart + i;
-                Capacities.AddEdge(v, target, 0);
+                Capacities.AddEdge(v, target, int.MaxValue);
                 Costs.AddEdge(v, target, 0);
             }
 
@@ -205,16 +226,44 @@ namespace ASD
 
 
             //Calculate quantity produced
+            weeklyPlan = new WeeklyPlan[n];
             int quantity = 0;
+            double profit = 0;
             for(int i = 0; i < n; i++)
             {
-                int v = weekMagStart + i;
-                int prod = production[i].Quantity;
-                int real = (int)flow.GetEdgeWeight(v, target);
-                quantity += prod - real;
+                int w = weekMagStart + i;
+                int maxProd = production[i].Quantity;
+                int actualProd = (int)flow.GetEdgeWeight(w, target);
+
+                int unitsMagazined;
+                if (i <= n - 1)
+                    unitsMagazined = (int)flow.GetEdgeWeight(w, i + 1) > 0 ? (int)flow.GetEdgeWeight(w, i + 1) : 0;
+                else
+                    unitsMagazined = 0;
+
+                double weeklyProdCost = production[i].Value;
+
+                profit -= unitsMagazined * storageInfo.Value;
+                profit -= (maxProd - actualProd) * weeklyProdCost;
+                weeklyPlan[i].UnitsStored = unitsMagazined;
+                weeklyPlan[i].UnitsProduced = maxProd - actualProd;
+                weeklyPlan[i].UnitsSold = new int[c];
+                for (int j = 0; j < c; j++)
+                {
+                    int v = contrStart + j;
+                    int soldAmount = (int)flow.GetEdgeWeight(i, v);
+                    double sellingPrice = sales[j, i].Value;
+                    profit += soldAmount * sellingPrice;
+                    weeklyPlan[i].UnitsSold[j] = soldAmount;
+                }
+                quantity += maxProd - actualProd;
             }
-            weeklyPlan = null;
-            return new PlanData { Quantity = quantity, Value = -cost };
+            GraphExport ge = new GraphExport();
+            GraphExport ge2 = new GraphExport();
+            //ge.Export(Capacities);
+            //ge2.Export(Costs);
+            ge.Export(flow);
+            return new PlanData { Quantity = quantity, Value = profit };
         }
 
     }
