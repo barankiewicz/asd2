@@ -14,3 +14,6 @@ X:\Programming\C#\asd2-zad4\asd2-zad4\obj\Debug\asd2-zad4.csprojResolveAssemblyR
 X:\Programming\C#\asd2-zad4\asd2-zad4\obj\Debug\asd2-zad4.csproj.CoreCompileInputs.cache
 X:\Programming\C#\asd2-zad4\asd2-zad4\obj\Debug\asd2-zad4.exe
 X:\Programming\C#\asd2-zad4\asd2-zad4\obj\Debug\asd2-zad4.pdb
+X:\Programming\C#\asd2\asd2-lab4\asd2-zad4\obj\Debug\asd2-zad4.csprojResolveAssemblyReference.cache
+X:\Programming\C#\asd2\asd2-lab4\asd2-zad4\obj\Debug\asd2-zad4.exe
+X:\Programming\C#\asd2\asd2-lab4\asd2-zad4\obj\Debug\asd2-zad4.pdb

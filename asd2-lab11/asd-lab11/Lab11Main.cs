@@ -866,7 +866,7 @@ namespace ASD
                 //new ComplexProductionProfitTestCase(20, null, "Mały test - większy zysk z magazynem", ComplexTests.SmallTestWithStorageProfit(), 25, 29.0),
                 //new ComplexProductionProfitTestCase(20, null, "Wąskie gardło - popyt", ComplexTests.DemandBottleneck(), 51, 69.0),
                 //new ComplexProductionProfitTestCase(20, null, "Wąskie gardło - podaż", ComplexTests.SupplyBottleneck(), 85, 652.0),
-                new ComplexProductionProfitTestCase(20, null, "Darmowy magazyn", ComplexTests.FreeStorage(), 72, 1860.0),
+                //new ComplexProductionProfitTestCase(20, null, "Darmowy magazyn", ComplexTests.FreeStorage(), 72, 1860.0),
                 //new ComplexProductionProfitTestCase(20, null, "Duża strata", ComplexTests.BigLoss(), 0, 0.0),
                 //new ComplexProductionProfitTestCase(20, null, "Brak magazynu", ComplexTests.NoStorage(), 156, 330.0),
                 //new ComplexProductionProfitTestCase(20, null, "Fabryka zamknięta", ComplexTests.NoProduction(), 0, 0.0),

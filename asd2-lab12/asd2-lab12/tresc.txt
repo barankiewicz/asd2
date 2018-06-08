@@ -1,0 +1,63 @@
+﻿--- Blokady ulic ---
+
+W pewnym stołecznym mieście dość często odbywają się marsze, manifestacje, 
+biegi i inne wydarzenia blokujące ulice. Zadaniem Głównego Inżyniera Ruchu 
+jest takie zaplanowanie tych wydarzeń, aby przejazd między pewnymi kluczowymi 
+ulicami (przy których np. znajdują się szpitale) był możliwy. Inżynier wpadł 
+na pomysł, aby napisać program, który ułatwi mu pracę. Ma on listę niezablokowanych 
+ulic. Chciałby móc w szybki sposób sprawdzać dwie rzeczy:
+a) podać listę par ulic i dla każdej pary uzyskać informację czy istnieje przejazd między nimi,
+b) podać dwie dzielnice i uzyskać informację czy istnieje przejazd między nimi.
+
+Ponieważ Główny Inżynier Ruchu nie potrafi programować, poprosił Ciebie o pomoc.
+
+Dla ułatwienia wszystkie ulice są proste, dwukierunkowe i reprezentowane przez odcinki, 
+dla których podane są współrzędne dwóch końców. Z jednej ulicy można przejechać na drugą, 
+jeżeli odcinki je reprezentujące przecinają się (mają co najmniej jeden punkt wspólny). 
+Można założyć, że żadna ulica nie ma zerowej długości tzn. jej końce nie mają 
+tych samych współrzędnych. Jednak może się zdarzyć tak, że ulice częściowo pokrywają się 
+(mają więcej niż 1 punkt wspólny). W takim przypadku metody z etapów II-IV powinny rzucić 
+wyjątek ArgumentException.
+
+Etap I - 0,5 pkt.
+Uzupełnij metodę CheckIntersection, która zwraca:
+0 - w przypadku, gdy podane odcinki nie posiadają żadnego punktu wspólnego,
+1 - jeżeli podane odcinki mają dokładnie jeden punkt wspólny,
+int.MaxValue - jeśli podane odcinki mają więcej niż jeden punkt wspólny 
+(czyli mają nieskończenie wiele punktów wspólnych)
+W dostarczonej strukturze Point można znaleźć przydatne operacje.
+
+Etap II - 1,5 pkt.
+Uzupełnij metodę CheckStreetsPairs, która na wejściu przyjmuje tablicę 'streets' 
+wszystkich niezablokowanych ulic w mieście oraz dwie tablice o tej samej długości 
+'streetsToCheck1' i 'streetsToCheck2' identyfikatorów ulic (identyfikator ulicy 
+to jej indeks na liście 'streets') i zwróci tablicę z informacją dla każdej pary 
+(parę stanowi i-ty element tablicy 'streetsToCheck1' i i-ty 'streetsToCheck2') 
+czy możliwy jest przejazd między tymi ulicami (z użyciem być może innych 
+niezablokowanych ulic). 
+
+Tablice streetsToCheck1/[2] mogą być bardzo długie dlatego wymagane jest 
+zaprojektowanie struktury, której złożoność pamięciowa będzie liniowa względem 
+'streets' oraz pozwoli na odpowiedź w asymptotycznie stałym czasie na każde 
+z zapytań o parę ulic.
+
+Wskazówka: W bibliotece Graph znajduje się klasa UnionFind, którą można wykorzystać.
+
+Etap III - 0,5 pkt.
+Uzupełnij metodę GetIntersectionPoint, która zwraca punkt przecięcia dwóch ulic-odcinków.
+W przypadku, gdy taki punkt nie istnieje lub jest niejednoznaczny rzucić wyjątek ArgumentException.
+
+Etap IV - 1,5 pkt. (0,5 pkt. za prawidłowe wyniki, 1 pkt. za ścieżkę i listę skrzyżowań).
+Uzupełnij metodę CheckDistricts, która na wejściu przyjmuje tablicę 'streets' 
+wszystkich niezablokowanych ulic w mieście oraz dwie dzielnice 
+reprezentowane przez wielokąty zadane tablicą punktów - wierzchołków. Metoda 
+powinna zwrócić informację czy istnieją niezablokowane ulice, którymi można 
+przejechać między dzielnicami. Ulicą można dojechać do dzielnicy jeśli istnieje 
+przynajmniej jeden punkt wspólny wielokąta-dzielnicy i odcinka-ulicy.
+Można założyć, że dzielnice są rozłączne i wszystkie punkty opisujące dzielnicę są różne.
+
+Dodatkowo jako parametr wyjściowy 'path' należy zwrócić ścieżkę - listę identyfikatorów 
+ulic, którymi po kolei można dostać się z dzielnicy pierwszej do drugiej. Podana ścieżka 
+powinna być najkrótszą ścieżką pod względem liczby ulic. Jeśli istnieje więcej niż jedna 
+taka ścieżka zwróć dowolną z nich. Ponadto w parametrze 'intersections' należy zapisać 
+listę kolejnych skrzyżowań (przecięć kolejnych ulic na ścieżce).
