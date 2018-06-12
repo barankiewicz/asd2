@@ -1,0 +1,16 @@
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.exe.config
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.exe
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.pdb
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\bin\Debug\TestSet.dll
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.csprojResolveAssemblyReference.cache
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.csproj.CoreCompileInputs.cache
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.exe
+h:\Windows7\Desktop\ASD2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.pdb
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.exe.config
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.exe
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\bin\Debug\asd2-lab14.pdb
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.csprojAssemblyReference.cache
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.csproj.CoreCompileInputs.cache
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.csproj.CopyComplete
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.exe
+X:\Programming\C#\asd2\asd2-lab14\asd2-lab14\obj\Debug\asd2-lab14.pdb
