@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ASD.Graphs
 {
@@ -16,68 +18,143 @@ namespace ASD.Graphs
         int[] route; 
         int[] best; //najlepsze dotychczas znalezione rozwiazanie
         double[,] A; //macierz reprezentujaca graf
+        int actRow = 0;
+        int actCol = 0;
 
-        (double[] rowValues, double[] colValues, double cost, HashSet<(int, int)> zeroes) Reduce(double[,] G, int[] row, int[] col)
+        (double[] rowValues, double[] colValues, double cost) Reduce(int[] row, int[] col, int edgesNo)
         {
             double cost = 0;
             double[] rowValues = new double[n];
             double[] colValues = new double[n];
-            HashSet<(int, int)> zeroes = new HashSet<(int, int)>();
 
             //po wierszach...
-            for (int i = 0; i < n && row[i] != -1; ++i)
+            for (int i = 0; i < n - edgesNo; ++i)
             {
+                actRow = row[i];
                 double temp = double.PositiveInfinity;
-                for (int j = 0; j < n && col[j] != -1; j++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
+                for (int j = 0; j < n - edgesNo; j++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
                 {
-                    if (G[row[i], col[j]] == 0)
-                        zeroes.Add((row[i], col[j]));
-                    if (G[row[i], col[j]] < temp)
-                        temp = G[row[i], col[j]];
+                    actCol = col[j];
+                    if (A[actRow, actCol] == 0) //jesli jest juz 0, to nie trzeba dalej szukac
+                    {
+                        temp = 0;
+                        break;
+                    }
+                    else if (A[actRow, actCol] < temp)
+                        temp = A[actRow, actCol];
                 }
+
 
                 if (temp > 0 && temp != double.PositiveInfinity)
                 {
-                    for (int j = 0; j < n && col[j] != -1; j++) //odejmujemy od kazdego pola w danym wierszu
-                    {
-                        G[row[i], col[j]] -= temp;
-                        if (G[row[i], col[j]] == 0)
-                            zeroes.Add((row[i], row[j]));
-                    }
-                        
+                    for (int j = 0; j < n - edgesNo; j++) //odejmujemy od kazdego pola w danym wierszu
+                        A[actRow, col[j]] -= temp;
                     cost += temp;
                 }
                 rowValues[i] = temp;
             }
             //i po kolumnach
-            for (int j = 0; j < n && col[j] != -1; ++j)
+            for (int j = 0; j < n - edgesNo; ++j)
             {
+                actCol = col[j];
                 double temp = double.PositiveInfinity;
-                for (int i = 0; i < n && row[i] != -1; i++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
+                for (int i = 0; i < n - edgesNo; i++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
                 {
-                    if (G[row[i], col[j]] == 0)
-                        zeroes.Add((row[i], col[j]));
-                    if (G[row[i], col[j]] < temp)
-                        temp = G[row[i], col[j]];
+                    actRow = row[i];
+                    if (A[actRow, actCol] == 0)
+                    {
+                        temp = 0;
+                        break;
+                    }
+                    else if (A[actRow, actCol] < temp)
+                        temp = A[actRow, actCol];
                 }
-
 
                 if (temp > 0 && temp != double.PositiveInfinity)
                 {
-                    for (int i = 0; i < n && row[i] != -1; i++) //odejmujemy od kazdego pola w danym wierszu
-                    {
-                        G[row[i], col[j]] -= temp;
-                        if (G[row[i], col[j]] == 0)
-                            zeroes.Add((row[i], col[j]));
-                    }  
+                    for (int i = 0; i < n - edgesNo; i++) //odejmujemy od kazdego pola w danym wierszu
+                        A[row[i], actCol] -= temp;
                     cost += temp;
                 }
                 colValues[j] = temp;
             }
-            return (rowValues, colValues, cost, zeroes);
+            return (rowValues, colValues, cost);
         }
 
-        public (int r, int c, double most) ChooseArc(double[,] G, int[] row, int[] col, HashSet<(int,int)> zeroes)
+        public (int r, int c, double most) ChooseArcAsync(int[] row, int[] col, int edgesNo)
+        {
+            int r = -1;
+            int c = -1;
+            int actualRow;
+            int actualCol;
+            double actualVal;
+            double[] rowValues = new double[n];
+            double[] colValues = new double[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                rowValues[i] = -1;
+                colValues[i] = -1;
+            }
+            double most = double.NegativeInfinity;
+
+            Parallel.For(0, n - edgesNo, (i) =>
+            {
+                for (int j = 0; j < n - edgesNo; j++)
+                    if (A[row[i], col[j]] == 0)
+                    {
+                        double minR = double.PositiveInfinity;
+                        double minC = double.PositiveInfinity;
+                        //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
+                        if (rowValues[row[i]] == -1)
+                        {
+                            for (int k = 0; k < n - edgesNo; k++)
+                            {
+                                actualRow = row[i];
+                                actualCol = col[k];
+                                actualVal = A[row[i], col[k]];
+                                if (A[row[i], col[k]] < minR && col[k] != col[j])
+                                    minR = A[row[i], col[k]];
+                            }
+                            rowValues[row[i]] = minR;
+                        }
+                        else
+                            minR = rowValues[row[i]]; //mamy juz value, to po co obliczac ponownie?
+
+                        //Wyznaczam najmniejszy element w kolumnie j rozny od G[i,j]
+                        if (colValues[col[j]] == -1)
+                        {
+                            for (int k = 0; k < n - edgesNo; k++)
+                            {
+                                actualRow = row[k];
+                                actualCol = col[j];
+                                actualVal = A[row[k], col[j]];
+                                if (A[row[k], col[j]] < minC && row[k] != col[i])
+                                    minC = A[row[k], col[j]];
+                            }
+                            colValues[col[j]] = minC;
+                        }
+                        else
+                            minC = colValues[col[j]];
+
+                        if (double.IsPositiveInfinity(minC))
+                            minC = 0;
+                        if (double.IsPositiveInfinity(minR))
+                            minR = 0;
+
+                        double total = minR + minC;
+                        if (total >= most)
+                        {
+                            most = total;
+                            r = i;
+                            c = j;
+                        }
+                    }
+            });
+            return (r, c, most);
+        }
+
+        public (int r, int c, double most) ChooseArc(int[] row, int[] col)
         {
             int r = -1;
             int c = -1;
@@ -94,180 +171,59 @@ namespace ASD.Graphs
             }
 
             double most = double.NegativeInfinity;
-            foreach ((int i, int j) in zeroes)
-            {
-                double minR = double.PositiveInfinity;
-                double minC = double.PositiveInfinity;
-                //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
-                if (rowValues[i] == -1)
-                {
-                    for (int k = 0; k < n && col[k] != -1; k++)
+            for (int i = 0; i < n && row[i] != -1; i++)
+                for (int j = 0; j < n && col[j] != -1; j++)
+                    if (A[row[i], col[j]] == 0)
                     {
-                        actualRow = i;
-                        actualCol = col[k];
-                        actualVal = G[i, col[k]];
-                        if (G[i, col[k]] < minR && col[k] != j)
-                            minR = G[i, col[k]];
+                        double minR = double.PositiveInfinity;
+                        double minC = double.PositiveInfinity;
+                        //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
+                        if (rowValues[row[i]] == -1)
+                        {
+                            for (int k = 0; k < n && col[k] != -1; k++)
+                            {
+                                actualRow = row[i];
+                                actualCol = col[k];
+                                actualVal = A[row[i], col[k]];
+                                if (A[row[i], col[k]] < minR && col[k] != col[j])
+                                    minR = A[row[i], col[k]];
+                            }
+                            rowValues[row[i]] = minR;
+                        }
+                        else
+                            minR = rowValues[row[i]]; //mamy juz value, to po co obliczac ponownie?
+
+                        //Wyznaczam najmniejszy element w kolumnie j rozny od G[i,j]
+                        if (colValues[col[j]] == -1)
+                        {
+                            for (int k = 0; k < n && row[k] != -1; k++)
+                            {
+                                actualRow = row[k];
+                                actualCol = col[j];
+                                actualVal = A[row[k], col[j]];
+                                if (A[row[k], col[j]] < minC && row[k] != col[i])
+                                    minC = A[row[k], col[j]];
+                            }
+                            colValues[col[j]] = minC;
+                        }
+                        else
+                            minC = colValues[col[j]];
+
+                        if (double.IsPositiveInfinity(minC))
+                            minC = 0;
+                        if (double.IsPositiveInfinity(minR))
+                            minR = 0;
+
+                        double total = minR + minC;
+                        if (total >= most)
+                        {
+                            most = total;
+                            r = i;
+                            c = j;
+                        }
                     }
-                    rowValues[i] = minR;
-                }
-                else
-                    minR = rowValues[i]; //mamy juz value, to po co obliczac ponownie?
-
-                //Wyznaczam najmniejszy element w kolumnie j rozny od G[i,j]
-                if (colValues[j] == -1)
-                {
-                    for (int k = 0; k < n && row[k] != -1; k++)
-                    {
-                        actualRow = row[k];
-                        actualCol = j;
-                        actualVal = G[row[k], j];
-                        if (G[row[k], j] < minC && row[k] != i)
-                            minC = G[row[k], j];
-                    }
-                    colValues[j] = minC;
-                }
-                else
-                    minC = colValues[j];
-
-                if (double.IsPositiveInfinity(minC))
-                    minC = 0;
-                if (double.IsPositiveInfinity(minR))
-                    minR = 0;
-
-                double total = minR + minC;
-                if (total >= most)
-                {
-                    most = total;
-                    r = i;
-                    c = j;
-                }
-            }
             return (r, c, most);
         }
-
-        //(double[] rowValues, double[] colValues, double cost) Reduce(double[,] G, int[] row, int[] col)
-        //{
-        //    double cost = 0;
-        //    double[] rowValues = new double[n];
-        //    double[] colValues = new double[n];
-        //    List<(int, int)> zeroes = new List<(int, int)>();
-
-        //    //po wierszach...
-        //    for (int i = 0; i < n && row[i] != -1; ++i)
-        //    {
-        //        double temp = double.PositiveInfinity;
-        //        for (int j = 0; j < n && col[j] != -1; j++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
-        //            if (G[row[i], col[j]] == 0) //jesli jest juz 0, to nie trzeba dalej szukac
-        //            {
-        //                temp = 0;
-        //                break;
-        //            }
-        //            else if (G[row[i], col[j]] < temp)
-        //                temp = G[row[i], col[j]];
-
-        //        if (temp > 0 && temp != double.PositiveInfinity)
-        //        {
-        //            for (int j = 0; j < n && col[j] != -1; j++) //odejmujemy od kazdego pola w danym wierszu
-        //                G[row[i], col[j]] -= temp;
-        //            cost += temp;
-        //        }
-        //        rowValues[i] = temp;
-        //    }
-        //    //i po kolumnach
-        //    for (int j = 0; j < n && col[j] != -1; ++j)
-        //    {
-        //        double temp = double.PositiveInfinity;
-        //        for (int i = 0; i < n && row[i] != -1; i++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
-        //            if (G[row[i], col[j]] == 0)
-        //            {
-        //                temp = 0;
-        //                break;
-        //            }
-        //            else if (G[row[i], col[j]] < temp)
-        //                temp = G[row[i], col[j]];
-
-        //        if (temp > 0 && temp != double.PositiveInfinity)
-        //        {
-        //            for (int i = 0; i < n && row[i] != -1; i++) //odejmujemy od kazdego pola w danym wierszu
-        //                G[row[i], col[j]] -= temp;
-        //            cost += temp;
-        //        }
-        //        colValues[j] = temp;
-        //    }
-        //    return (rowValues, colValues, cost);
-        //}
-
-        //public (int r, int c, double most) ChooseArc(double[,] G, int[] row, int[] col)
-        //{
-        //    int r = -1;
-        //    int c = -1;
-        //    int actualRow;
-        //    int actualCol;
-        //    double actualVal;
-        //    double[] rowValues = new double[n];
-        //    double[] colValues = new double[n];
-
-        //    for (int i = 0; i < n; i++)
-        //    {
-        //        rowValues[i] = -1;
-        //        colValues[i] = -1;
-        //    }
-
-        //    double most = double.NegativeInfinity;
-        //    for (int i = 0; i < n && row[i] != -1; i++)
-        //        for (int j = 0; j < n && col[j] != -1; j++)
-        //            if (G[row[i], col[j]] == 0)
-        //            {
-        //                double minR = double.PositiveInfinity;
-        //                double minC = double.PositiveInfinity;
-        //                //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
-        //                if (rowValues[row[i]] == -1)
-        //                {
-        //                    for (int k = 0; k < n && col[k] != -1; k++)
-        //                    {
-        //                        actualRow = row[i];
-        //                        actualCol = col[k];
-        //                        actualVal = G[row[i], col[k]];
-        //                        if (G[row[i], col[k]] < minR && col[k] != col[j])
-        //                            minR = G[row[i], col[k]];
-        //                    }
-        //                    rowValues[row[i]] = minR;
-        //                }
-        //                else
-        //                    minR = rowValues[row[i]]; //mamy juz value, to po co obliczac ponownie?
-
-        //                //Wyznaczam najmniejszy element w kolumnie j rozny od G[i,j]
-        //                if (colValues[col[j]] == -1)
-        //                {
-        //                    for (int k = 0; k < n && row[k] != -1; k++)
-        //                    {
-        //                        actualRow = row[k];
-        //                        actualCol = col[j];
-        //                        actualVal = G[row[k], col[j]];
-        //                        if (G[row[k], col[j]] < minC && row[k] != col[i])
-        //                            minC = G[row[k], col[j]];
-        //                    }
-        //                    colValues[col[j]] = minC;
-        //                }
-        //                else
-        //                    minC = colValues[col[j]];
-
-        //                if (double.IsPositiveInfinity(minC))
-        //                    minC = 0;
-        //                if (double.IsPositiveInfinity(minR))
-        //                    minR = 0;
-
-        //                double total = minR + minC;
-        //                if (total >= most)
-        //                {
-        //                    most = total;
-        //                    r = i;
-        //                    c = j;
-        //                }
-        //            }
-        //    return (r, c, most);
-        //}
 
         public int[] UpdateIndex(int[] arr, int index, int trimNo)
         {
@@ -286,7 +242,8 @@ namespace ASD.Graphs
 
         public void Explore(int edgesNo, double cost, int[] rows, int[] columns)
         {
-            (double[] rowVals, double[] colVals, double reduceCost, HashSet<(int,int)> zeroes) = Reduce(A, rows, columns);
+            //(double[] rowVals, double[] colVals, double reduceCost, HashSet<(int, int)> zeroes) = Reduce(A, rows, columns);
+            (double[] rowVals, double[] colVals, double reduceCost) = Reduce(rows, columns, edgesNo);
             cost += reduceCost;
 
             if (cost < tweight)
@@ -319,12 +276,13 @@ namespace ASD.Graphs
                 }
                 else //Macierz jest wieksza niz 2x2 - trzeba rekurowac dalej
                 {
-                    (int r, int c, double most) = ChooseArc(A, rows, columns, zeroes); //wybierz najlepszy łuk do podziału
+                    //(int r, int c, double most) = ChooseArcAsync(rows, columns, edgesNo); //wybierz najlepszy łuk do podziału
+                    (int r, int c, double most) = ChooseArc(rows, columns); //wybierz najlepszy łuk do podziału
+                    //(int r, int c, double most) = ChooseArc(A, rows, columns, zeroes); //wybierz najlepszy łuk do podziału
                     if (r == -1) //w przypadku grafow rzadkich czasami nie ma juz krawedzi do dalszej pracy
                         return;
                     int actualRow = rows[r];
                     int actualCol = columns[c];
-
                     double lowerBound = cost + most; //nie czuje gdy rymuje
 
                     fwdptr[rows[r]] = columns[c];
@@ -423,17 +381,21 @@ namespace ASD.Graphs
 
         public static void DoTest(Graph g, TSPHelper tsp)
         {
-            var watchBiblio = System.Diagnostics.Stopwatch.StartNew();
-            (double goodWeight, Edge[] goodPath) = g.BranchAndBoundTSP();
-            watchBiblio.Stop();
-            var elapsedMsBiblio = watchBiblio.ElapsedTicks;
+            double goodWeight = 0;
+            Edge[] goodPath = new Edge[0];
+            Stopwatch s1 = new Stopwatch();
+            s1.Start();
+            //(goodWeight, goodPath) = g.BranchAndBoundTSP();
+            s1.Stop();
+            var elapsedMsBiblio = s1.ElapsedMilliseconds;
 
-
-            Edge[] myPath;
-            var myWatch = System.Diagnostics.Stopwatch.StartNew();
-            double myWeight = tsp.TSP(g, out myPath);
-            myWatch.Stop();
-            var elapsedMsMy = watchBiblio.ElapsedTicks;
+            double myWeight = 0;
+            Edge[] myPath = new Edge[0];
+            Stopwatch s2 = new Stopwatch();
+            s2.Start();
+            myWeight = tsp.TSP(g, out myPath);
+            s2.Stop();
+            var elapsedMsMy = s2.ElapsedMilliseconds;
 
             Console.WriteLine("Rozwiazanie biblioteczne: " + goodWeight);
             if (goodPath != null)
@@ -446,8 +408,8 @@ namespace ASD.Graphs
             if (myPath != null)
                 foreach (Edge e in myPath)
                     Console.Write("(" + e.From + ", " + e.To + "), ");
-            
 
+            Console.WriteLine();
             Console.WriteLine("Czas biblio: " + elapsedMsBiblio.ToString());
             Console.WriteLine("Czas moj: " + elapsedMsMy.ToString());
             if ((double.IsNaN(goodWeight) && double.IsNaN(myWeight)) || goodWeight == myWeight)
@@ -506,7 +468,7 @@ namespace ASD.Graphs
             var myWatch = System.Diagnostics.Stopwatch.StartNew();
             double myWeight = tsp.TSP(g, out myPath);
             myWatch.Stop();
-            var elapsedMsMy = watchBiblio.ElapsedTicks;
+            var elapsedMsMy = myWatch.ElapsedTicks;
 
             Console.WriteLine("Rozwiazanie biblioteczne: " + goodWeight);
             if (goodPath != null)
@@ -534,17 +496,35 @@ namespace ASD.Graphs
         public static void DoTests()
         {
             TSPHelper tsp = new TSPHelper();
-            int N = 10; //ilosc testow
-            int M = 6; //rozmiar testow
+            int N = 1; //ilosc testow
+            int M = 20; //rozmiar testow
             int seed = 57532;
             RandomGraphGenerator rgg = new RandomGraphGenerator(seed);
 
-            //for(int i = 0; i < N; i++)
+            Graph g = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.1, 1, 100, true);
+            DoTest(g, tsp);
+
+            Graph g1 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.2, 1, 100, true);
+            DoTest(g1, tsp);
+
+            Graph g2 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.5, 1, 100, true);
+            DoTest(g2, tsp);
+
+            Graph g3 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.7, 1, 100, true);
+            DoTest(g3, tsp);
+
+            Graph g4 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.8, 1, 100, true);
+            DoTest(g4, tsp);
+
+            Graph g5 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 1, 1, 100, true);
+            DoTest(g5, tsp);
+
+
+            //for (int i = 0; i < N; i++)
             //{
-            //    Graph g = rgg.UndirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.3, 1, 100, true);
-            //    DoTest(g, tsp);
+
             //}
-            DrBrodkaTest(tsp);
+            //DrBrodkaTest(tsp);
         }
 
         static void Main(string[] args)
