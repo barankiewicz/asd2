@@ -3,43 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ASD
+namespace ASD.Graphs
 {
-    public class IsTreeTestCase : TestCase
-    {
-        private bool expected;
-        private bool actual;
-        private Graph g;
-        private Graph g1;
-
-        public IsTreeTestCase(double timeLimit, Exception expectedException, string description,
-            Graph g, bool expected) 
-            : base(timeLimit, expectedException, description)
-        {
-            this.g = g;
-            g1 = g.Clone();
-            this.expected = expected;
-        }
-
-        public override void PerformTestCase(object prototypeObject)
-        {
-            actual = ((CyclesFinder)prototypeObject).IsTree(g1);
-        }
-
-        public override void VerifyTestCase(out Result resultCode, out string message, object settings)
-        {
-            if(expected != actual)
-            {
-                resultCode = Result.BadResult;
-                message = $"Niepoprawna odpowiedź: {actual} (oczekiwano {expected})";
-            }
-            else
-            {
-                resultCode = Result.Success;
-                message = "OK";
-            }
-        }
-    }
 
     public class CyclesTestCase : TestCase
     {
@@ -64,7 +29,7 @@ namespace ASD
 
         public override void PerformTestCase(object prototypeObject)
         {
-            CyclesFinder finder = (CyclesFinder)prototypeObject;
+            CyclesFinder finder = (TSPHelper)prototypeObject;
             cycles = finder.FindFundamentalCycles(g1, t1);
         }
 
@@ -177,102 +142,6 @@ namespace ASD
                 }
             message = "OK";
             return true;
-        }
-    }
-
-    public class AddCyclesTestCase : TestCase
-    {
-        private Edge[] c1;
-        private Edge[] c2;
-        private List<int> expected;
-        private Edge[] result;
-
-        public AddCyclesTestCase(double timeLimit, Exception expectedException, string description,
-            (Graph g, List<int> c1, List<int> c2, List<int> res) test)
-            : base(timeLimit, expectedException, description)
-        {
-            c1 = ToEdges(test.c1);
-            c2 = ToEdges(test.c2);
-            expected = test.res;
-        }
-
-        private Edge[] ToEdges(List<int> vertices)
-        {
-            Edge[] edges = new Edge[vertices.Count];
-            for (int i = 1; i < vertices.Count; ++i)
-                edges[i - 1] = new Edge(vertices[i - 1], vertices[i]);
-            edges[vertices.Count - 1] = new Edge(vertices[vertices.Count - 1], vertices[0]);
-            return edges;
-        }
-
-        public override void PerformTestCase(object prototypeObject)
-        {
-            CyclesFinder finder = (CyclesFinder)prototypeObject;
-            result = finder.AddFundamentalCycles((Edge[])c1.Clone(), (Edge[])c2.Clone());
-        }
-
-        public override void VerifyTestCase(out Result resultCode, out string message, object settings)
-        {
-            if(expected == null)
-            {
-                if(result == null)
-                {
-                    message = "Ok (null)";
-                    resultCode = Result.Success;
-                    return;
-                }
-                else
-                {
-                    message = "Zwrócono cykl, gdy oczekiwano null";
-                    resultCode = Result.BadResult;
-                    return;
-                }
-            }
-            if (result == null)
-            {
-                message = "Zwrócono null, gdy wynik jest cyklem";
-                resultCode = Result.BadResult;
-                return;
-            }
-            if(result.Length != expected.Count)
-            {
-                message = $"Nieprawidłowa liczba krawędzi: {result.Length} (oczekiwano {expected.Count})";
-                resultCode = Result.BadResult;
-                return;
-            }
-            if(result[result.Length-1].To != result[0].From)
-            {
-                message = "Nie zwrócono cyklu";
-                resultCode = Result.BadResult;
-                return;
-            }
-
-            int start = 0;
-            for (; start < expected.Count; ++start)
-                if (result[0].From == expected[start])
-                    break;
-
-            List<int> tmp;
-            if (expected[(start + 1) % expected.Count] != result[0].To)
-                tmp = expected.Skip(start + 1).Concat(expected.Take(start + 1)).Reverse().ToList();
-            else
-                tmp = expected.Skip(start).Concat(expected.Take(start)).ToList();
-            for (int i = 0; i < tmp.Count; ++i) {
-                if (result[i].From != tmp[i])
-                {
-                    message = $"Niepoprawna krawędź: {result[i]}";
-                    resultCode = Result.BadResult;
-                    return;
-                }
-                if(result[i].To != tmp[(i+1)%tmp.Count])
-                {
-                    message = $"Niepoprawna krawędź {result[i]}";
-                    resultCode = Result.BadResult;
-                    return;
-                }
-            }
-            resultCode = Result.Success;
-            message = "OK";
         }
     }
 
