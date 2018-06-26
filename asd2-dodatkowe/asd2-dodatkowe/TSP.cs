@@ -17,9 +17,12 @@ namespace ASD.Graphs
         int[] backptr; //krawedzie w tyl (w rozwiazaniu jeszcze niezakonczonym)
         int[] route; 
         int[] best; //najlepsze dotychczas znalezione rozwiazanie
-        double[,] A; //macierz reprezentujaca graf
+        double[][] A; //macierz reprezentujaca graf
+        double[][] A2; //macierz reprezentujaca graf
         int actRow = 0;
         int actCol = 0;
+        int[] outDeg;
+        int[] inDeg;
 
         (double[] rowValues, double[] colValues, double cost) Reduce(int[] row, int[] col, int edgesNo)
         {
@@ -35,20 +38,20 @@ namespace ASD.Graphs
                 for (int j = 0; j < n - edgesNo; j++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
                 {
                     actCol = col[j];
-                    if (A[actRow, actCol] == 0) //jesli jest juz 0, to nie trzeba dalej szukac
+
+                    if (A[actRow][actCol] == 0) //jesli jest juz 0, to nie trzeba dalej szukac
                     {
                         temp = 0;
                         break;
                     }
-                    else if (A[actRow, actCol] < temp)
-                        temp = A[actRow, actCol];
+                    else if (A[actRow][actCol] < temp)
+                        temp = A[actRow][actCol];
                 }
-
 
                 if (temp > 0 && temp != double.PositiveInfinity)
                 {
                     for (int j = 0; j < n - edgesNo; j++) //odejmujemy od kazdego pola w danym wierszu
-                        A[actRow, col[j]] -= temp;
+                        A[actRow][col[j]] -= temp;
                     cost += temp;
                 }
                 rowValues[i] = temp;
@@ -61,97 +64,24 @@ namespace ASD.Graphs
                 for (int i = 0; i < n - edgesNo; i++) //znajdz pole w wierszu, ktore ma najmniejszy koszt
                 {
                     actRow = row[i];
-                    if (A[actRow, actCol] == 0)
+                    if (A[actRow][actCol] == 0)
                     {
                         temp = 0;
                         break;
                     }
-                    else if (A[actRow, actCol] < temp)
-                        temp = A[actRow, actCol];
+                    else if (A[actRow][actCol] < temp)
+                        temp = A[actRow][actCol];
                 }
 
                 if (temp > 0 && temp != double.PositiveInfinity)
                 {
                     for (int i = 0; i < n - edgesNo; i++) //odejmujemy od kazdego pola w danym wierszu
-                        A[row[i], actCol] -= temp;
+                        A[row[i]][actCol] -= temp;
                     cost += temp;
                 }
                 colValues[j] = temp;
             }
             return (rowValues, colValues, cost);
-        }
-
-        public (int r, int c, double most) ChooseArcAsync(int[] row, int[] col, int edgesNo)
-        {
-            int r = -1;
-            int c = -1;
-            int actualRow;
-            int actualCol;
-            double actualVal;
-            double[] rowValues = new double[n];
-            double[] colValues = new double[n];
-
-            for (int i = 0; i < n; i++)
-            {
-                rowValues[i] = -1;
-                colValues[i] = -1;
-            }
-            double most = double.NegativeInfinity;
-
-            Parallel.For(0, n - edgesNo, (i) =>
-            {
-                for (int j = 0; j < n - edgesNo; j++)
-                    if (A[row[i], col[j]] == 0)
-                    {
-                        double minR = double.PositiveInfinity;
-                        double minC = double.PositiveInfinity;
-                        //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
-                        if (rowValues[row[i]] == -1)
-                        {
-                            for (int k = 0; k < n - edgesNo; k++)
-                            {
-                                actualRow = row[i];
-                                actualCol = col[k];
-                                actualVal = A[row[i], col[k]];
-                                if (A[row[i], col[k]] < minR && col[k] != col[j])
-                                    minR = A[row[i], col[k]];
-                            }
-                            rowValues[row[i]] = minR;
-                        }
-                        else
-                            minR = rowValues[row[i]]; //mamy juz value, to po co obliczac ponownie?
-
-                        //Wyznaczam najmniejszy element w kolumnie j rozny od G[i,j]
-                        if (colValues[col[j]] == -1)
-                        {
-                            for (int k = 0; k < n - edgesNo; k++)
-                            {
-                                actualRow = row[k];
-                                actualCol = col[j];
-                                actualVal = A[row[k], col[j]];
-                                if (A[row[k], col[j]] < minC && row[k] != col[i])
-                                    minC = A[row[k], col[j]];
-                            }
-                            colValues[col[j]] = minC;
-                        }
-                        else
-                            minC = colValues[col[j]];
-
-                        if (double.IsPositiveInfinity(minC))
-                            minC = 0;
-                        if (double.IsPositiveInfinity(minR))
-                            minR = 0;
-
-                        double total = minR + minC;
-                        if (total >= most)
-                        {
-                            most = total;
-                            r = i;
-                            c = j;
-                        }
-                    }
-            });
-            return (r, c, most);
         }
 
         public (int r, int c, double most) ChooseArc(int[] row, int[] col)
@@ -160,6 +90,7 @@ namespace ASD.Graphs
             int c = -1;
             int actualRow;
             int actualCol;
+
             double actualVal;
             double[] rowValues = new double[n];
             double[] colValues = new double[n];
@@ -173,8 +104,10 @@ namespace ASD.Graphs
             double most = double.NegativeInfinity;
             for (int i = 0; i < n && row[i] != -1; i++)
                 for (int j = 0; j < n && col[j] != -1; j++)
-                    if (A[row[i], col[j]] == 0)
+                    if (A[row[i]][col[j]] == 0)
                     {
+                        int ttttRow = row[i];
+                        int ttttCol = col[j];
                         double minR = double.PositiveInfinity;
                         double minC = double.PositiveInfinity;
                         //Wyznaczam najmniejszy element w wierszu i rozny od G[i,j]
@@ -182,11 +115,16 @@ namespace ASD.Graphs
                         {
                             for (int k = 0; k < n && col[k] != -1; k++)
                             {
+                                if(col[k] != col[j] && A[row[i]][col[k]] == 0)
+                                {
+                                    minR = 0;
+                                    break;
+                                }
                                 actualRow = row[i];
                                 actualCol = col[k];
-                                actualVal = A[row[i], col[k]];
-                                if (A[row[i], col[k]] < minR && col[k] != col[j])
-                                    minR = A[row[i], col[k]];
+                                actualVal = A[row[i]][col[k]];
+                                if (A[row[i]][col[k]] < minR && col[k] != col[j])
+                                    minR = A[row[i]][col[k]];
                             }
                             rowValues[row[i]] = minR;
                         }
@@ -200,9 +138,14 @@ namespace ASD.Graphs
                             {
                                 actualRow = row[k];
                                 actualCol = col[j];
-                                actualVal = A[row[k], col[j]];
-                                if (A[row[k], col[j]] < minC && row[k] != col[i])
-                                    minC = A[row[k], col[j]];
+                                actualVal = A[row[k]][col[j]];
+                                if (A[row[k]][col[j]] == 0 && actualRow != ttttRow)
+                                {
+                                    minC = 0;
+                                    break;
+                                }
+                                if (A[row[k]][col[j]] < minC && actualRow != ttttRow)
+                                    minC = A[row[k]][col[j]];
                             }
                             colValues[col[j]] = minC;
                         }
@@ -215,6 +158,13 @@ namespace ASD.Graphs
                             minR = 0;
 
                         double total = minR + minC;
+                        if (outDeg[row[i]] == 1 || inDeg[col[j]] == 1)
+                        {
+                            most = total;
+                            r = i;
+                            c = j;
+                            return (r, c, most);
+                        }
                         if (total >= most)
                         {
                             most = total;
@@ -250,6 +200,18 @@ namespace ASD.Graphs
             {
                 if(edgesNo == n - 2) //Doprowadzilismy do macierzy 2x2, wiec wystarczy juz tylko dodac dwie pozostale krawedzie
                 {
+                    double leftUpper = A[rows[0]][columns[0]];
+                    double leftLower = A[rows[0]][columns[1]];
+                    double rightUpper = A[rows[1]][columns[0]];
+                    double rightLower = A[rows[1]][columns[1]];
+
+                    if ((double.IsInfinity(leftUpper) && double.IsInfinity(leftLower)) ||
+                       (double.IsInfinity(leftUpper) && double.IsInfinity(rightUpper)) ||
+                       (double.IsInfinity(leftLower) && double.IsInfinity(rightLower)) ||
+                       (double.IsInfinity(rightUpper) && double.IsInfinity(rightLower))
+                        )
+                        return;
+
                     for (int i = 0; i < n; i++)
                     {
                         best[i] = fwdptr[i];
@@ -257,7 +219,7 @@ namespace ASD.Graphs
                             return;
                     }
                         
-                    if (double.IsPositiveInfinity(A[rows[0], columns[0]]))
+                    if (double.IsPositiveInfinity(A[rows[0]][columns[0]]))
                     {
                         best[rows[0]] = columns[1];
                         best[rows[1]] = columns[0];
@@ -276,9 +238,7 @@ namespace ASD.Graphs
                 }
                 else //Macierz jest wieksza niz 2x2 - trzeba rekurowac dalej
                 {
-                    //(int r, int c, double most) = ChooseArcAsync(rows, columns, edgesNo); //wybierz najlepszy łuk do podziału
                     (int r, int c, double most) = ChooseArc(rows, columns); //wybierz najlepszy łuk do podziału
-                    //(int r, int c, double most) = ChooseArc(A, rows, columns, zeroes); //wybierz najlepszy łuk do podziału
                     if (r == -1) //w przypadku grafow rzadkich czasami nie ma juz krawedzi do dalszej pracy
                         return;
                     int actualRow = rows[r];
@@ -296,8 +256,10 @@ namespace ASD.Graphs
                     while (backptr[first] != -1)
                         first = backptr[first];
 
-                    double RowColumnValue = A[last, first];
-                    A[last, first] = double.PositiveInfinity;
+                    double RowColumnValue = A[last][first];
+                    A[last][first] = double.PositiveInfinity;
+
+                    outDeg[actualCol]--;
 
                     //Zmniejsz macierz
                     int[] newRows = UpdateIndex(rows, r, edgesNo);
@@ -305,14 +267,15 @@ namespace ASD.Graphs
 
                     Explore(edgesNo + 1, cost, newRows, newCols); //lewe drzewo
 
-                    A[last, first] = RowColumnValue;
+                    outDeg[actualCol]++;
+                    A[last][first] = RowColumnValue;
                     backptr[columns[c]] = -1;
                     fwdptr[rows[r]] = -1;
-                    if (lowerBound < tweight) //Prawe poddrzewo o potencjalnie mniejszym koszcie niz znalezione idac ciagle na lewo
+                    if (lowerBound < tweight && outDeg[actualRow] != 1 && inDeg[actualCol] != 1) //Prawe poddrzewo o potencjalnie mniejszym koszcie niz znalezione idac ciagle na lewo
                     {
-                        A[rows[r], columns[c]] = double.PositiveInfinity;
+                        A[rows[r]][columns[c]] = double.PositiveInfinity;
                         Explore(edgesNo, cost, rows, columns); //Po zejsciu na prawo, rekurujemy dalej
-                        A[rows[r], columns[c]] = 0;
+                        A[rows[r]][columns[c]] = 0;
                     }
                 }
             }
@@ -321,7 +284,7 @@ namespace ASD.Graphs
             if (reduceCost != 0)
                 for (int i = 0; i < n && rows[i] != -1; i++)
                     for (int j = 0; j < n && columns[j] != -1; j++)
-                        A[rows[i], columns[j]] += rowVals[i] + colVals[j];
+                        A[rows[i]][columns[j]] += rowVals[i] + colVals[j];
         }
 
         public double TSP(Graph g, out Edge[] cycle)
@@ -334,8 +297,11 @@ namespace ASD.Graphs
             n = g.VerticesCount;
             this.g = g;
 
-            A = new double[n, n];
+            A = new double[n][];
+            for (int i = 0; i < n; i++)
+                A[i] = new double[n];
             A = g.ToArray(); //zamien graf na macierz sasiedztwa
+            A2 = g.ToArray();
 
             if(A == null)
                 return double.NaN;
@@ -348,12 +314,16 @@ namespace ASD.Graphs
             route = new int[n];
             best = new int[n];
             tweight = double.PositiveInfinity;
+            outDeg = new int[n];
+            inDeg = new int[n];
             for (int i = 0; i < n; i++)
             {
                 rows[i] = i;
                 columns[i] = i;
                 backptr[i] = -1;
                 fwdptr[i] = -1;
+                outDeg[i] = g.OutDegree(i);
+                inDeg[i] = g.InDegree(i);
             }
 
             Explore(0, 0, rows, columns);
@@ -369,12 +339,12 @@ namespace ASD.Graphs
                 index = best[index];
                 if(i != 0)
                 {
-                    res[i - 1] = new Edge(route[i - 1], route[i], A[route[i - 1], route[i]]);
+                    res[i - 1] = new Edge(route[i - 1], route[i], A[route[i - 1]][route[i]]);
                     if (double.IsNaN(res[i - 1].Weight))
                         return double.NaN;
                 }
             }
-            res[n - 1] = new Edge(route[n - 1], route[0], A[route[n - 1], route[0]]);
+            res[n - 1] = new Edge(route[n - 1], route[0], A[route[n - 1]][route[0]]);
             cycle = res;
             return tweight;
         }
@@ -385,9 +355,9 @@ namespace ASD.Graphs
             Edge[] goodPath = new Edge[0];
             Stopwatch s1 = new Stopwatch();
             s1.Start();
-            //(goodWeight, goodPath) = g.BranchAndBoundTSP();
+            (goodWeight, goodPath) = g.BranchAndBoundTSP();
             s1.Stop();
-            var elapsedMsBiblio = s1.ElapsedMilliseconds;
+            var elapsedMsBiblio = s1.ElapsedTicks;
 
             double myWeight = 0;
             Edge[] myPath = new Edge[0];
@@ -395,7 +365,7 @@ namespace ASD.Graphs
             s2.Start();
             myWeight = tsp.TSP(g, out myPath);
             s2.Stop();
-            var elapsedMsMy = s2.ElapsedMilliseconds;
+            var elapsedMsMy = s2.ElapsedTicks;
 
             Console.WriteLine("Rozwiazanie biblioteczne: " + goodWeight);
             if (goodPath != null)
@@ -496,34 +466,16 @@ namespace ASD.Graphs
         public static void DoTests()
         {
             TSPHelper tsp = new TSPHelper();
-            int N = 1; //ilosc testow
-            int M = 20; //rozmiar testow
-            int seed = 57532;
+            int N = 20; //ilosc testow
+            int M = 30; //rozmiar testow
+            int seed = 3377;
             RandomGraphGenerator rgg = new RandomGraphGenerator(seed);
-
-            Graph g = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.1, 1, 100, true);
-            DoTest(g, tsp);
-
-            Graph g1 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.2, 1, 100, true);
-            DoTest(g1, tsp);
-
-            Graph g2 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.5, 1, 100, true);
-            DoTest(g2, tsp);
-
-            Graph g3 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.7, 1, 100, true);
-            DoTest(g3, tsp);
-
-            Graph g4 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.8, 1, 100, true);
-            DoTest(g4, tsp);
-
-            Graph g5 = rgg.DirectedGraph(typeof(AdjacencyMatrixGraph), M, 1, 1, 100, true);
-            DoTest(g5, tsp);
-
-
-            //for (int i = 0; i < N; i++)
-            //{
-
-            //}
+            for (int i = 0; i < N; i++)
+            {
+                Graph g4 = rgg.UndirectedGraph(typeof(AdjacencyMatrixGraph), M, 0.3, 1, 100, true);
+                //Graph g4 = rgg.UndirectedCycle(typeof(AdjacencyMatrixGraph), M, 1, 5, true);
+                DoTest(g4, tsp);
+            }
             //DrBrodkaTest(tsp);
         }
 
@@ -535,27 +487,30 @@ namespace ASD.Graphs
 
     public static class GraphExtender
     {
-        public static double[,] ToArray(this Graph g)
+        public static double[][] ToArray(this Graph g)
         {
             int n = g.VerticesCount;
-            double[,] ret = new double[n, n];
+            double[][] ret = new double[n][];
+
+            for (int i = 0; i < n; i++)
+                ret[i] = new double[n];
 
             for (int i = 0; i < n; ++i)
             {
                 for (int j = 0; j < n; ++j)
-                    ret[i, j] = double.PositiveInfinity;
+                    ret[i][j] = double.PositiveInfinity;
                 int deg = 0; //stopien aktualnego wierzcholka
                 foreach (Edge e in g.OutEdges(i))
                 {
                     if (e.Weight < 0)
                         throw new ArgumentException(); //ujemna krawedz - zwracamy null
-                    ret[e.From, e.To] = e.Weight;
+                    ret[e.From][e.To] = e.Weight;
                     deg++; //inkrementuj stopien
                 }
 
                 if (deg == 0)
                     return null; // istnieje wierzcholek stopnia 0
-                ret[i, i] = double.PositiveInfinity;
+                ret[i][i] = double.PositiveInfinity;
             }
             return ret;
         }
